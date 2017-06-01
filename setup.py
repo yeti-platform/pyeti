@@ -1,14 +1,12 @@
 from setuptools import setup
 
-import pyeti
-
 def readme():
     with open('README.md') as f:
         return f.read()
 
 
 setup(name='pyeti',
-      version=pyeti.__version__,
+      version="0.0.1",
       description='Python bindings for Yeti\'s API',
       long_description=readme(),
       classifiers=[
