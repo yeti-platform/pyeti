@@ -6,7 +6,7 @@ import pyeti
 class TestAPI(TestCase):
     url = 'http://localhost:5000'
     fake_host = False
-    
+
     if fake_host:
         import SimpleHTTPServer
         import SocketServer
@@ -18,8 +18,6 @@ class TestAPI(TestCase):
 
         print "serving at port", PORT
         httpd.serve_forever()
-    else:
-        pass
 
     def test_have_class(self):
         try:
@@ -39,10 +37,6 @@ class TestAPI(TestCase):
             self.test = pyeti.YetiApi('http://localhost:5000')
         except TypeError as e:
             pass  # fail appropriately here.
-
-    def test_has_version(self):
-        s = pyeti.__version__
-        self.assertTrue(isinstance(s, basestring))
 
     def test_has_analysis_match(self):
         api = pyeti.YetiApi(self.url)
