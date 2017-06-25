@@ -3,14 +3,14 @@ Python bindings for Yeti's API
 
 ## Installation
 
-`$ python setup.py install` should get you started.
+`$ python setup.py install` should get you started. After this gets a little more maturity, we will submit it to Pypy for usage with `pip`.
 
 ## Some examples
 
 First thing is to import the library and instantiate a client.
 
 ```python
-import pyeti, json
+import pyeti, json    # json is only used for pretty printing in the examples below 
 api = pyeti.YetiApi("http://localhost:5000/api/")
 ```
 
