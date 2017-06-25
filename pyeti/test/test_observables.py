@@ -41,6 +41,16 @@ class TestAPI(TestCase):
         tags = [t['name'] for t in info['tags']]
         self.assertEqual(tags, ['asd', 'dsa'])
 
+    def test_observable_by_tag(self):
+        domain = _random_domain()
+        tag = _random_string()
+        self.api.observable_add(domain, [tag])
+        results = self.api.observable_search(tags=tag)
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]['value'], domain)
+        tags = [t['name'] for t in results[0]['tags']]
+        self.assertIn(tag, tags)
+
     def test_bulk_observable_add(self):
         """Adds an observables in bulk."""
         observables = ["{}{}.com".format(_random_domain(), i) for i in xrange(20)]
