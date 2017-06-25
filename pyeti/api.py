@@ -175,7 +175,4 @@ class YetiApi(object):
 
 
 if __name__ == '__main__':
-    y = YetiApi(url='http://localhost:5000/api/')
-    # print y.observable_add('asdoiajwdoiawjd.com', ['asd'])
-    # print y.observable_file_add("/tmp/toto", tags=['file_asd'])
-    print y.analysis_match(['asdoiajwdoiawjd.com'])
+    pass
