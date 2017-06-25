@@ -5,6 +5,15 @@ Python bindings for Yeti's API
 
 `$ python setup.py install` should get you started. After this gets a little more maturity, we will submit it to Pypy for usage with `pip`.
 
+## Testing
+
+You can run tests from the root directory by running:
+
+    $ pip install nose
+    $ python setup.py test
+    
+**Note that most tests require a full running install of Yeti on localhost:5000**
+
 ## Some examples
 
 First thing is to import the library and instantiate a client.
