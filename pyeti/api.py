@@ -125,7 +125,7 @@ class YetiApi(object):
 
         return updated_fileinfo
 
-    def observable_bulk_add(self, observables, tags=[]):
+    def observable_bulk_add(self, observables, tags=[], source="API"):
         """Add an observable to the dataset
 
         Args:
@@ -138,7 +138,7 @@ class YetiApi(object):
         Returns:
             JSON representation of the created observable.
         """
-        json = {"observables": [{"tags": tags, "value": o} for o in observables]}
+        json = {"observables": [{"tags": tags, "value": o, "source": source} for o in observables]}
         return self._make_post('observable/bulk', json=json)
 
     def _test_connection(self):
