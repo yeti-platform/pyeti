@@ -10,7 +10,7 @@ Python bindings for Yeti's API
 First thing is to import the library and instantiate a client.
 
 ```python
-import pyeti
+import pyeti, json
 api = pyeti.YetiApi("http://localhost:5000/api/")
 ```
 
@@ -18,7 +18,6 @@ api = pyeti.YetiApi("http://localhost:5000/api/")
 
 ```python
 results = api.observable_add("google.com", ['google'])
-import json
 print json.dumps(results, indent=4, sort_keys=True)
 {
     "context": [],
@@ -41,5 +40,29 @@ print json.dumps(results, indent=4, sort_keys=True)
     "type": "Hostname",
     "url": "http://localhost:5000/api/observable/594ff3ffbf365e53fbae38c9",
     "value": "google.com"
+}
+```
+
+**Bulk add**
+
+```Python
+results = api.observable_bulk_add(["google.com", "bing.com", "yahoo.com"])
+print len(results)
+3
+print json.dumps(results[1], indent=4, sort_keys=True)
+{
+    "context": [],
+    "created": "2017-06-25T17:39:31.051000",
+    "description": null,
+    "human_url": "http://localhost:5000/observable/594ff553bf365e53fbae38cc",
+    "id": "594ff553bf365e53fbae38cc",
+    "last_analyses": {},
+    "sources": [
+        "API"
+    ],
+    "tags": [],
+    "type": "Hostname",
+    "url": "http://localhost:5000/api/observable/594ff553bf365e53fbae38cc",
+    "value": "bing.com"
 }
 ```
