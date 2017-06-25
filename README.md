@@ -9,7 +9,7 @@ Python bindings for Yeti's API
 
 First thing is to import the library and instantiate a client.
 
-```
+```python
 import pyeti
 api = pyeti.YetiApi("http://localhost:5000/api/")
 ```
