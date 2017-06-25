@@ -14,12 +14,12 @@ import pyeti
 api = pyeti.YetiApi("http://localhost:5000/api/")
 ```
 
-*Adding observables*
+**Adding observables**
 
 ```python
->>> results = api.observable_add("google.com", ['google'])
->>> import json
->>> print json.dumps(results, indent=4, sort_keys=True)
+results = api.observable_add("google.com", ['google'])
+import json
+print json.dumps(results, indent=4, sort_keys=True)
 {
     "context": [],
     "created": "2017-06-25T17:33:51.735000",
