@@ -93,6 +93,18 @@ class YetiApi(object):
         result = self._make_post('observable/', json=json)
         return result
 
+    def observable_delete(self, id):
+        """Deletes an observable.
+
+        Args:
+            id: The observable's ObjectID
+
+        Returns:
+            Operation status in JSON.
+        """
+        self._make_delete('observable/{}'.format(id))
+        return {'status': 'deleted', 'id': id}
+
     def observable_file_add(self, path, tags=[], context={}, source="API"):
         """Upload a file to the dataset
 
@@ -159,6 +171,9 @@ class YetiApi(object):
     def _make_get(self, url):
         return self._make_request(url)
 
+    def _make_delete(self, url):
+        return self._make_request(url, method="DELETE")
+
     def _make_request(self, url, **kwargs):
         url = "{}{}".format(self.yeti_url, url)
 
@@ -170,8 +185,10 @@ class YetiApi(object):
 
         if method == "POST":
             r = requests.post(url, headers=headers, auth=self.auth, **kwargs)
-        else:
+        if method == "GET":
             r = requests.get(url, auth=self.auth, headers=headers)
+        if method == "DELETE":
+            r = requests.delete(url, auth=self.auth, headers=headers)
 
         if r.status_code == 200:
             logging.debug("Success ({})".format(r.status_code))
