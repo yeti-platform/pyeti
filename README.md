@@ -170,8 +170,8 @@ print json.dumps(result, indent=4, sort_keys=True)
         "value": "FILE:b22b009134622b6508d756f1062455d71a7026594eacb0badf81f4f677929ebe"
     }
 ]
-# Get contents
-result = api.observable_file_contents(id="594fff86bf365e6270f8914b")
+# Get file contents
+api.observable_file_contents(id="594fff86bf365e6270f8914b")
 'Hello!\n'
 api.observable_file_contents(hash="e134ced312b3511d88943d57ccd70c83") # you can also use any hash computed above
 'Hello!\n'
