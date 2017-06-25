@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import logging
+import os
 
 import requests
-import logging
 
 
 class YetiApi(object):
@@ -26,8 +27,8 @@ class YetiApi(object):
         Returns:
             JSON representation of match response.
         """
-        json_payload = {"observables": observables}
-        return self._make_post("analysis/match", json_payload)
+        json = {"observables": observables}
+        return self._make_post("analysis/match", json=json)
 
     def observable_search(self, count=50, offset=1, regex=False, **kwargs):
         """Search for observables.
@@ -43,8 +44,8 @@ class YetiApi(object):
         Returns:
             Array of JSON representations of matching Observables.
         """
-        json_payload = {"filter": kwargs, "params": {"page": offset, "range": count, "regex": regex}}
-        return self._make_post("observablesearch/", json_payload)
+        json = {"filter": kwargs, "params": {"page": offset, "range": count, "regex": regex}}
+        return self._make_post("observablesearch/", json=json)
 
     def observable_details(self, id):
         """Get details on an Observable.
@@ -69,11 +70,60 @@ class YetiApi(object):
         Returns:
             JSON representation of the created observable.
         """
-        json_payload = {"tags": tags,
-                        "value": value,
-                        "source": source,
-                        "context": context}
-        return self._make_post('observable/', payload=json_payload)
+        json = {
+            "tags": tags,
+            "value": value,
+            "source": source,
+            "context": context
+        }
+        return self._make_post('observable/', json=json)
+
+    def observable_change(self, id, tags=[], context=[]):
+        """Add tags to an observable.
+
+        Args:
+            id: The observable's ObjectID
+            tags: Tags to add
+            context: Context to add
+
+        Returns:
+            JSON representation of the updated observable
+        """
+        json = {"id": id, "tags": tags, "context": context}
+        result = self._make_post('observable/', json=json)
+        logging.debug(result)
+        return result
+
+    def observable_file_add(self, path, tags=[], context={}, source="API"):
+        """Upload a file to the dataset
+
+        Args:
+            path: The path to the file
+            tags: An array of strings representing tags
+            context: A dictionary object with context information
+            source: A string representing the source of the data. Defaults to
+                    "API".
+
+        Returns:
+            JSON representation of the created observable.
+        """
+        path = os.path.realpath(os.path.normpath(os.path.expanduser(path)))
+        filename = os.path.basename(path)
+        files = {'files': (filename, open(path, 'rb'))}
+        fileinfo = self._make_post(
+            'file/addfile',
+            files=files
+        )
+        if not (tags or context):
+            return fileinfo
+
+        updated_fileinfo = []
+        for fi in fileinfo:
+            print fi['id']
+            fileinfo = self.observable_change(fi['id'], tags, context)
+            updated_fileinfo.append(fileinfo)
+
+        return updated_fileinfo
 
     def observable_bulk_add(self, observables, tags=[]):
         """Add an observable to the dataset
@@ -88,8 +138,8 @@ class YetiApi(object):
         Returns:
             JSON representation of the created observable.
         """
-        json_payload = {"tags": tags, "observables": observables}
-        return self._make_post('observable/bulk', payload=json_payload)
+        json = {"observables": [{"tags": tags, "value": o} for o in observables]}
+        return self._make_post('observable/bulk', json=json)
 
     def _test_connection(self):
         if self._make_post("observablesearch/"):  # replace this with a more meaningful URL
@@ -97,22 +147,23 @@ class YetiApi(object):
         else:
             logging.debug("Conncetion to {} failed".format(self.yeti_url))
 
-    def _make_post(self, url, payload={}):
-        return self._make_request(url, method="POST", payload=payload)
+    def _make_post(self, url, **kwargs):
+        return self._make_request(url, method="POST", **kwargs)
 
     def _make_get(self, url):
         return self._make_request(url)
 
-    def _make_request(self, url, method="GET", payload={}):
+    def _make_request(self, url, **kwargs):
         url = "{}{}".format(self.yeti_url, url)
 
-        headers = {}
+        method = kwargs.pop("method", "GET")
+
+        headers = {'Accept': 'application/json'}
         if self.api_key:
             headers.update({"X-Api-Key": self.api_key})
 
         if method == "POST":
-            headers.update({'Accept': 'application/json'})
-            r = requests.post(url, headers=headers, auth=self.auth, json=payload)
+            r = requests.post(url, headers=headers, auth=self.auth, **kwargs)
         else:
             r = requests.get(url, auth=self.auth, headers=headers)
 
@@ -125,4 +176,6 @@ class YetiApi(object):
 
 if __name__ == '__main__':
     y = YetiApi(url='http://localhost:5000/api/')
-    print y.observable_add('asdoiajwdoiawjd.com', ['asd'])
+    # print y.observable_add('asdoiajwdoiawjd.com', ['asd'])
+    # print y.observable_file_add("/tmp/toto", tags=['file_asd'])
+    print y.analysis_match(['asdoiajwdoiawjd.com'])
