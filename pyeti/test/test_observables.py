@@ -26,6 +26,16 @@ class TestAPI(TestCase):
         tags = [t['name'] for t in info['tags']]
         self.assertEqual(tags, ['asd'])
 
+    def test_observable_delete(self):
+        domain = _random_domain()
+        info = self.api.observable_add(domain)
+        details = self.api.observable_details(info["id"])
+        self.assertEqual(details['value'], domain)
+        result = self.api.observable_delete(info['id'])
+        self.assertEqual(result, {'status': 'deleted', 'id': info['id']})
+        details = self.api.observable_details(domain)
+        self.assertIs(details, None)
+
     def test_observable_details(self):
         """Adds an observable and then fetches its details."""
         domain = _random_domain()
