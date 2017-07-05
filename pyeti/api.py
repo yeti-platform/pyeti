@@ -105,6 +105,9 @@ class YetiApi(object):
         logging.debug(result)
         return result
 
+    def observable_file_download(self, objectid):
+        return self._make_get('file/get/id/{}'.format(objectid))
+
     def observable_file_add(self, path, tags=None, context=None):
         """Upload a file to the dataset
 
@@ -185,7 +188,10 @@ class YetiApi(object):
 
         if resp.status_code == 200:
             logging.debug("Success (%s)", resp.status_code)
-            return resp.json()
+            try:
+                return resp.json()
+            except ValueError:
+                return resp
         else:
             logging.error("An error occurred (%s): %s", resp.status_code, url)
 
