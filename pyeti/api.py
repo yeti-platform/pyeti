@@ -104,19 +104,19 @@ class YetiApi(object):
         result = self._make_post('observable/', json=json)
         return result
 
-    def observable_delete(self, id):
+    def observable_delete(self, objectid):
         """Deletes an observable.
 
         Args:
-            id: The observable's ObjectID
+            objectid: The observable's ObjectID
 
         Returns:
             Operation status in JSON.
         """
-        self._make_delete('observable/{}'.format(id))
-        return {'status': 'deleted', 'id': id}
+        self._make_delete('observable/{}'.format(objectid))
+        return {'status': 'deleted', 'id': objectid}
 
-    def observable_file_add(self, path, tags=[], context={}, source="API"):
+    def observable_file_add(self, path, tags=None, context=None):
         """Upload a file to the dataset
 
         Args:
@@ -136,29 +136,37 @@ class YetiApi(object):
         path = os.path.realpath(os.path.normpath(os.path.expanduser(path)))
         filename = os.path.basename(path)
         files = {'files': (filename, open(path, 'rb'))}
-        fileinfo = self._make_post(
+        fileinfos = self._make_post(
             'file/addfile',
             files=files
         )
         if not (tags or context):
-            return fileinfo
+            return fileinfos
 
         updated_fileinfo = []
-        for fi in fileinfo:
-            fileinfo = self.observable_change(fi['id'], tags, context)
-            updated_fileinfo.append(fileinfo)
+        for info in fileinfos:
+            info = self.observable_change(info['id'], tags, context)
+            updated_fileinfo.append(info)
 
         return updated_fileinfo
 
-    def observable_file_contents(self, id=None, hash=None):
-        if id is not None:
-            return self._make_get('file/get/id/{}'.format(id))
-        elif hash is not None:
-            return self._make_get('file/get/hash/{}'.format(hash))
+    def observable_file_contents(self, objectid=None, filehash=None):
+        """Fetches the content of a File observable.
+        Args:
+            objectid: The observable's ObjectID.
+            filehash: The observable's hash.
+
+        Returns:
+            Binary data containing the file's contents.
+        """
+        if objectid is not None:
+            return self._make_get('file/get/id/{}'.format(objectid))
+        elif filehash is not None:
+            return self._make_get('file/get/hash/{}'.format(filehash))
         else:
             raise ValueError("You need to pass an id or hash parameter.")
 
-    def observable_bulk_add(self, observables, tags=[]):
+    def observable_bulk_add(self, observables, tags=None):
         """Add an observable to the dataset
 
         Args:
@@ -208,12 +216,10 @@ class YetiApi(object):
             resp = requests.delete(url, auth=self.auth, headers=headers)
 
         if resp.status_code == 200:
-            logging.debug("Success ({})".format(r.status_code))
-            try:
+            logging.debug("Success (%s)", resp.status_code)
+            if "json" in resp.headers.get('content-type'):
                 return resp.json()
-            except ValueError:
-                return resp.content
-
+            return resp.content
         else:
             logging.error("An error occurred (%s): %s", resp.status_code, url)
 
