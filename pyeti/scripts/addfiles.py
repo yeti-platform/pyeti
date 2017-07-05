@@ -2,6 +2,7 @@
 """Uploads a series of files to Yeti."""
 
 import glob
+import json
 import os
 import sys
 from tqdm import tqdm
@@ -34,12 +35,13 @@ def run(yeti_api, arguments):
 
     if len(paths) > 2:
         for path in paths:
-            print path
-        sys.stdout.write(
+            sys.stderr.write(path)
+        sys.stderr.write(
             "You are about to upload {} files from '{}' to Yeti. "
             "Proceed? [Y/n] ".format(
                 len(paths),
                 initial_path))
+        sys.stderr.flush()
         choice = raw_input().lower()
         if choice and choice not in ["Y", "y"]:
             sys.stderr.write("Bailing.\n")
@@ -49,5 +51,22 @@ def run(yeti_api, arguments):
     if tags:
         tags = tags.split(',')
 
-    for path in tqdm(paths, desc="Uploading"):
-        yeti_api.observable_file_add(path, tags=tags)
+    results = []
+    for path in tqdm(paths, desc="Uploading files"):
+        results.extend(yeti_api.observable_file_add(path, tags=tags))
+
+    if arguments.json:
+        sys.stdout.write(json.dumps(results, indent=4, sort_keys=True))
+        sys.stdout.flush()
+    else:
+        sys.stdout.write("{:<70} {:<20} {:<20}\n".format("SHA256", "Tags", "Filenames"))
+        sys.stdout.flush()
+        for result in results:
+            sys.stdout.write("{:<70} {:<20} {:<20}\n".format(
+                [h['value'] for h in result['hashes'] if h['hash'] == "sha256"][0],
+                ", ".join([t['name'] for t in result['tags']]),
+                ", ".join(result['filenames'])))
+        sys.stdout.write("Succesfully uploaded {} file{}.\n".format(
+            len(results),
+            "s" if len(results) > 1 else ""))
+        sys.stdout.flush()
