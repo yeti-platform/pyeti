@@ -3,8 +3,6 @@
 import sys
 import json
 
-from tqdm import tqdm
-
 def run(yeti_api, arguments):
 
     """Fetches information on a file in Yeti."""
@@ -33,18 +31,6 @@ def run(yeti_api, arguments):
 
     if arguments.save:
         with open(arguments.save, 'wb') as dumpfile:
-            spinner = spinning_cursor()
-            sys.stderr.write("\nDownloading {}... ".format(filehash))
-            for data in yeti_api.observable_file_download(fileinfo['id']):
-                dumpfile.write(data)
-                sys.stdout.write(spinner.next())
-                sys.stdout.flush()
-                sys.stdout.write('\b')
-        sys.stdout.flush()
-        sys.stderr.write("\b Done!\nDumped file to {}\n".format(arguments.save))
+            dumpfile.write(yeti_api.observable_file_contents(objectid=fileinfo['id']))
+        sys.stderr.write("\nDumped file to {}\n".format(arguments.save))
         sys.stderr.flush()
-
-def spinning_cursor():
-    while True:
-        for cursor in '|/-\\':
-            yield cursor
