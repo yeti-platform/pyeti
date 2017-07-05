@@ -107,17 +107,24 @@ class TestAPI(TestCase):
         tags = [t['name'] for t in fileinfo[0]['tags']]
         self.assertEqual(tags, ['file_tag'])
 
-    def test_file_download(self):
+    def test_file_download_by_id(self):
         with tempfile.NamedTemporaryFile('wb', delete=False) as f:
             f.write("content")
             filename = f.name
         fileinfo = self.api.observable_file_add(filename, ['file_tag'])[0]
         os.remove(filename)
-        content_by_id = self.api.observable_file_contents(id=fileinfo['id'])
-        # SHA256 of "content"
-        hash = "ed7002b439e9ac845f22357d822bac1444730fbdb6016d3ec9432297b9ec9f73"
-        content_by_hash = self.api.observable_file_contents(hash=hash)
+        content_by_id = self.api.observable_file_contents(objectid=fileinfo['id'])
         self.assertEqual(content_by_id, "content")
+
+    def test_file_download_by_hash(self):
+        with tempfile.NamedTemporaryFile('wb', delete=False) as f:
+            f.write("content")
+            filename = f.name
+        self.api.observable_file_add(filename, ['file_tag'])
+        os.remove(filename)
+        # SHA256 of "content"
+        filehash = "ed7002b439e9ac845f22357d822bac1444730fbdb6016d3ec9432297b9ec9f73"
+        content_by_hash = self.api.observable_file_contents(filehash=filehash)
         self.assertEqual(content_by_hash, "content")
 
     def test_analysis_match(self):
