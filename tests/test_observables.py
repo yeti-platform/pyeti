@@ -26,6 +26,16 @@ class TestAPI(TestCase):
         tags = [t['name'] for t in info['tags']]
         self.assertEqual(tags, ['asd'])
 
+    def test_observable_delete(self):
+        domain = _random_domain()
+        info = self.api.observable_add(domain)
+        details = self.api.observable_details(info["id"])
+        self.assertEqual(details['value'], domain)
+        result = self.api.observable_delete(info['id'])
+        self.assertEqual(result, {'status': 'deleted', 'id': info['id']})
+        details = self.api.observable_details(domain)
+        self.assertIs(details, None)
+
     def test_observable_details(self):
         """Adds an observable and then fetches its details."""
         domain = _random_domain()
@@ -40,6 +50,16 @@ class TestAPI(TestCase):
         info = self.api.observable_change(info['id'], tags=['dsa'])
         tags = [t['name'] for t in info['tags']]
         self.assertEqual(tags, ['asd', 'dsa'])
+
+    def test_observable_by_tag(self):
+        domain = _random_domain()
+        tag = _random_string()
+        self.api.observable_add(domain, [tag])
+        results = self.api.observable_search(tags=tag)
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]['value'], domain)
+        tags = [t['name'] for t in results[0]['tags']]
+        self.assertIn(tag, tags)
 
     def test_bulk_observable_add(self):
         """Adds an observables in bulk."""
@@ -86,6 +106,19 @@ class TestAPI(TestCase):
         self.assertEqual(fileinfo[0]['value'], expected_filename)
         tags = [t['name'] for t in fileinfo[0]['tags']]
         self.assertEqual(tags, ['file_tag'])
+
+    def test_file_download(self):
+        with tempfile.NamedTemporaryFile('wb', delete=False) as f:
+            f.write("content")
+            filename = f.name
+        fileinfo = self.api.observable_file_add(filename, ['file_tag'])[0]
+        os.remove(filename)
+        content_by_id = self.api.observable_file_contents(id=fileinfo['id'])
+        # SHA256 of "content"
+        hash = "ed7002b439e9ac845f22357d822bac1444730fbdb6016d3ec9432297b9ec9f73"
+        content_by_hash = self.api.observable_file_contents(hash=hash)
+        self.assertEqual(content_by_id, "content")
+        self.assertEqual(content_by_hash, "content")
 
     def test_analysis_match(self):
         """Calls the match endpoint with a known and an unknown domain."""

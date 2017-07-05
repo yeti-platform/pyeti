@@ -102,13 +102,21 @@ class YetiApi(object):
             context = {}
         json = {"id": objectid, "tags": tags, "context": context}
         result = self._make_post('observable/', json=json)
-        logging.debug(result)
         return result
 
-    def observable_file_download(self, objectid):
-        return self._make_get('file/get/id/{}'.format(objectid))
+    def observable_delete(self, id):
+        """Deletes an observable.
 
-    def observable_file_add(self, path, tags=None, context=None):
+        Args:
+            id: The observable's ObjectID
+
+        Returns:
+            Operation status in JSON.
+        """
+        self._make_delete('observable/{}'.format(id))
+        return {'status': 'deleted', 'id': id}
+
+    def observable_file_add(self, path, tags=[], context={}, source="API"):
         """Upload a file to the dataset
 
         Args:
@@ -136,13 +144,21 @@ class YetiApi(object):
             return fileinfo
 
         updated_fileinfo = []
-        for info in fileinfo:
-            info = self.observable_change(info['id'], tags, context)
-            updated_fileinfo.append(info)
+        for fi in fileinfo:
+            fileinfo = self.observable_change(fi['id'], tags, context)
+            updated_fileinfo.append(fileinfo)
 
         return updated_fileinfo
 
-    def observable_bulk_add(self, observables, tags=None):
+    def observable_file_contents(self, id=None, hash=None):
+        if id is not None:
+            return self._make_get('file/get/id/{}'.format(id))
+        elif hash is not None:
+            return self._make_get('file/get/hash/{}'.format(hash))
+        else:
+            raise ValueError("You need to pass an id or hash parameter.")
+
+    def observable_bulk_add(self, observables, tags=[]):
         """Add an observable to the dataset
 
         Args:
@@ -172,6 +188,9 @@ class YetiApi(object):
     def _make_get(self, url):
         return self._make_request(url)
 
+    def _make_delete(self, url):
+        return self._make_request(url, method="DELETE")
+
     def _make_request(self, url, **kwargs):
         url = "{}{}".format(self.yeti_url, url)
 
@@ -183,15 +202,18 @@ class YetiApi(object):
 
         if method == "POST":
             resp = requests.post(url, headers=headers, auth=self.auth, **kwargs)
-        else:
+        if method == "GET":
             resp = requests.get(url, auth=self.auth, headers=headers)
+        if method == "DELETE":
+            resp = requests.delete(url, auth=self.auth, headers=headers)
 
         if resp.status_code == 200:
-            logging.debug("Success (%s)", resp.status_code)
+            logging.debug("Success ({})".format(r.status_code))
             try:
                 return resp.json()
             except ValueError:
-                return resp
+                return resp.content
+
         else:
             logging.error("An error occurred (%s): %s", resp.status_code, url)
 
