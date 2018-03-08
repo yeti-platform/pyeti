@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
+"""Python interface to the Yeti REST API."""
+
 import logging
 import os
 
@@ -7,7 +10,7 @@ import requests
 
 
 class YetiApi(object):
-    """Python class for interacting with the Yeti API"""
+    """Python interface to the Yeti REST API."""
 
     def __init__(self, url, auth=tuple(), api_key=None):
         super(YetiApi, self).__init__()
@@ -47,17 +50,17 @@ class YetiApi(object):
         json = {"filter": kwargs, "params": {"page": offset, "range": count, "regex": regex}}
         return self._make_post("observablesearch/", json=json)
 
-    def observable_details(self, id):
+    def observable_details(self, objectid):
         """Get details on an Observable.
         Args:
-            id: A string representing the observable's ObjectID
+            objectid: A string representing the observable's ObjectID
 
         Returns:
             JSON representation of the requested Observable.
         """
-        return self._make_get("observable/{}".format(id))
+        return self._make_get("observable/{}".format(objectid))
 
-    def observable_add(self, value, tags=[], context={}, source="API"):
+    def observable_add(self, value, tags=None, context=None, source="API"):
         """Add an observable to the dataset
 
         Args:
@@ -70,6 +73,10 @@ class YetiApi(object):
         Returns:
             JSON representation of the created observable.
         """
+        if tags is None:
+            tags = []
+        if context is None:
+            context = {}
         json = {
             "tags": tags,
             "value": value,
@@ -78,34 +85,38 @@ class YetiApi(object):
         }
         return self._make_post('observable/', json=json)
 
-    def observable_change(self, id, tags=[], context=[]):
+    def observable_change(self, objectid, tags=None, context=None):
         """Add tags to an observable.
 
         Args:
-            id: The observable's ObjectID
+            objectid: The observable's ObjectID
             tags: Tags to add
             context: Context to add
 
         Returns:
             JSON representation of the updated observable
         """
-        json = {"id": id, "tags": tags, "context": context}
+        if tags is None:
+            tags = []
+        if context is None:
+            context = {}
+        json = {"id": objectid, "tags": tags, "context": context}
         result = self._make_post('observable/', json=json)
         return result
 
-    def observable_delete(self, id):
+    def observable_delete(self, objectid):
         """Deletes an observable.
 
         Args:
-            id: The observable's ObjectID
+            objectid: The observable's ObjectID
 
         Returns:
             Operation status in JSON.
         """
-        self._make_delete('observable/{}'.format(id))
-        return {'status': 'deleted', 'id': id}
+        self._make_delete('observable/{}'.format(objectid))
+        return {'status': 'deleted', 'id': objectid}
 
-    def observable_file_add(self, path, tags=[], context={}, source="API"):
+    def observable_file_add(self, path, tags=None, context=None):
         """Upload a file to the dataset
 
         Args:
@@ -118,32 +129,44 @@ class YetiApi(object):
         Returns:
             JSON representation of the created observable.
         """
+        if tags is None:
+            tags = []
+        if context is None:
+            context = {}
         path = os.path.realpath(os.path.normpath(os.path.expanduser(path)))
         filename = os.path.basename(path)
         files = {'files': (filename, open(path, 'rb'))}
-        fileinfo = self._make_post(
+        fileinfos = self._make_post(
             'file/addfile',
             files=files
         )
         if not (tags or context):
-            return fileinfo
+            return fileinfos
 
         updated_fileinfo = []
-        for fi in fileinfo:
-            fileinfo = self.observable_change(fi['id'], tags, context)
-            updated_fileinfo.append(fileinfo)
+        for info in fileinfos:
+            info = self.observable_change(info['id'], tags, context)
+            updated_fileinfo.append(info)
 
         return updated_fileinfo
 
-    def observable_file_contents(self, id=None, hash=None):
-        if id is not None:
-            return self._make_get('file/get/id/{}'.format(id))
-        elif hash is not None:
-            return self._make_get('file/get/hash/{}'.format(hash))
+    def observable_file_contents(self, objectid=None, filehash=None):
+        """Fetches the content of a File observable.
+        Args:
+            objectid: The observable's ObjectID.
+            filehash: The observable's hash.
+
+        Returns:
+            Binary data containing the file's contents.
+        """
+        if objectid is not None:
+            return self._make_get('file/get/id/{}'.format(objectid))
+        elif filehash is not None:
+            return self._make_get('file/get/hash/{}'.format(filehash))
         else:
             raise ValueError("You need to pass an id or hash parameter.")
 
-    def observable_bulk_add(self, observables, tags=[], source="API"):
+    def observable_bulk_add(self, observables, tags=None):
         """Add an observable to the dataset
 
         Args:
@@ -156,14 +179,16 @@ class YetiApi(object):
         Returns:
             JSON representation of the created observable.
         """
-        json = {"observables": [{"tags": tags, "value": o, "source": source} for o in observables]}
+        if tags is None:
+            tags = []
+        json = {"observables": [{"tags": tags, "value": o} for o in observables]}
         return self._make_post('observable/bulk', json=json)
 
     def _test_connection(self):
         if self._make_post("observablesearch/"):  # replace this with a more meaningful URL
-            logging.debug("Connection to {} successful".format(self.yeti_url))
+            logging.debug("Connection to %s successful", self.yeti_url)
         else:
-            logging.debug("Conncetion to {} failed".format(self.yeti_url))
+            logging.debug("Conncetion to %s failed", self.yeti_url)
 
     def _make_post(self, url, **kwargs):
         return self._make_request(url, method="POST", **kwargs)
@@ -184,21 +209,19 @@ class YetiApi(object):
             headers.update({"X-Api-Key": self.api_key})
 
         if method == "POST":
-            r = requests.post(url, headers=headers, auth=self.auth, **kwargs)
+            resp = requests.post(url, headers=headers, auth=self.auth, **kwargs)
         if method == "GET":
-            r = requests.get(url, auth=self.auth, headers=headers)
+            resp = requests.get(url, auth=self.auth, headers=headers)
         if method == "DELETE":
-            r = requests.delete(url, auth=self.auth, headers=headers)
+            resp = requests.delete(url, auth=self.auth, headers=headers)
 
-        if r.status_code == 200:
-            logging.debug("Success ({})".format(r.status_code))
-            try:
-                return r.json()
-            except ValueError:
-                return r.content
-
+        if resp.status_code == 200:
+            logging.debug("Success (%s)", resp.status_code)
+            if "json" in resp.headers.get('content-type'):
+                return resp.json()
+            return resp.content
         else:
-            logging.error("An error occurred ({}): {}".format(r.status_code, url))
+            logging.error("An error occurred (%s): %s", resp.status_code, url)
 
 
 if __name__ == '__main__':
