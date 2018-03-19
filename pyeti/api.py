@@ -21,6 +21,53 @@ class YetiApi(object):
         self.api_key = api_key
         self._test_connection()
 
+    def entity_search(self, count=50, offset=1, regex=False, **kwargs):
+        """Fetches a list of indicators associated with an Entity.
+
+        Args:
+            count: How many Entities you want to fetch.
+            offset: How many sets of *count* Entities you want to skip
+                    (total skipped = offset * count)
+            regex: Use regular expressions to Search.
+            kwargs: Remaining keyword arguments will be transformed in a JSON
+                    object that will act as the filter.
+
+        Returns:
+          A list of indicators.
+        """
+        json = {
+            "filter": kwargs,
+            "params": {
+                "page": offset,
+                "range": count,
+                "regex": regex
+            }
+        }
+        return self._make_post("entitysearch/", json=json)
+
+    def entity_get(self, objectid):
+        """Fetches an entity by ID.
+
+        Returns:
+           JSON representation of the requested Entity."""
+        return self._make_get("entity/{}".format(objectid))
+
+    def related_indicators(self, entity, **kwargs):
+        """Fetches indicators linked to a given entity.
+
+        Args:
+           entity: JSON dict representing the Entity to search indicators for.
+           kwargs: Remaining keyword arguments will be transformed in a JSON
+                   object that will act as the filter.
+
+        Returns:
+           A list of matching JSON Indicators.
+        """
+        url = "neighbors/tuples/{0:s}/{1:s}/indicator".format(
+            entity['type'], entity['id'])
+        json = {"filter": kwargs}
+        return self._make_post(url, json=json)
+
     def analysis_match(self, observables):
         """Matches a list of observables against Yeti indicators.
 
