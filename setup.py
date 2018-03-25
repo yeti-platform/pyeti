@@ -26,6 +26,7 @@ setup(name='pyeti',
       license='Apache',
       packages=find_packages(),
       install_requires=[
+          'timesketch-api-client',
           'requests',
           'logging',
           'tqdm',
