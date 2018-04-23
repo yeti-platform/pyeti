@@ -264,6 +264,7 @@ class YetiApi(object):
                 logging.error('Error to check status %s' % id_oneshot)
         else:
             logging.error('id_oneshot is empty %s' % id_oneshot)
+
     def list_analytics_oneshot(self):
         r = self._make_get('analytics/oneshot')
         if r:
