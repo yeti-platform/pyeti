@@ -231,6 +231,44 @@ class YetiApi(object):
         json = {"observables": [{"tags": tags, "value": o} for o in observables]}
         return self._make_post('observable/bulk', json=json)
 
+    def launch_analytics_oneshot(self, name_of_oneshot, value, type_obversable):
+        all_analytics = self.list_analytics_oneshot()
+
+        oneshot = [ item for item in all_analytics if item['name'] == name_of_oneshot]
+
+        if oneshot:
+            if type_obversable in oneshot[0]['acts_on']:
+                print(value)
+                observable = self.observable_add(value)
+                if observable:
+                    oneshot_inst = self._make_post('analytics/oneshot/%s/run' % oneshot[0]['id'], data={'id': observable['id']})
+                    status =self.analytics_oneshot_status(oneshot_inst['_id'])
+
+                    while status['status'] =='running':
+                        status = self.analytics_oneshot_status(oneshot_inst['_id'])
+                        continue
+
+                    if status['status'] == 'finished':
+                        return status['results']
+                    else:
+                        logging.error('Error Oneshot Processing %s with %s' % (name_of_oneshot, value))
+
+        pass
+
+    def analytics_oneshot_status(self,id_oneshot):
+        if id_oneshot:
+            r = self._make_get('analytics/oneshot/%s/status' % id_oneshot)
+            if r:
+                return r
+            else:
+                logging.error('Error to check status %s' % id_oneshot)
+        else:
+            logging.error('id_oneshot is empty %s' % id_oneshot)
+    def list_analytics_oneshot(self):
+        r = self._make_get('analytics/oneshot')
+        if r:
+            return r
+
     def _test_connection(self):
         if self._make_post("observablesearch/"):  # replace this with a more meaningful URL
             logging.debug("Connection to %s successful", self.yeti_url)
@@ -272,4 +310,7 @@ class YetiApi(object):
 
 
 if __name__ == '__main__':
+    api = YetiApi("http://localhost:5000/api/")
+    status = api.launch_analytics_oneshot('Virustotal','cf52885b0b9221a6c8efbde6208d8c7f3bac16898d1a3b06f4676a8b8e4a5029','Hash')
+    print(status)
     pass
