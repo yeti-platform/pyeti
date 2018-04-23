@@ -311,7 +311,4 @@ class YetiApi(object):
 
 
 if __name__ == '__main__':
-    api = YetiApi("http://localhost:5000/api/")
-    status = api.launch_analytics_oneshot('Virustotal','cf52885b0b9221a6c8efbde6208d8c7f3bac16898d1a3b06f4676a8b8e4a5029','Hash')
-    print(status)
     pass
