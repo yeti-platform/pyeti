@@ -261,7 +261,8 @@ class YetiApi(object):
                 if observable:
                     oneshot_inst = self._make_post('analytics/oneshot/%s/run' %
                                                    oneshot[0]['id'],
-                                                   data={'id': observable['id']})
+                                                   data={'id': observable['id']}
+                                                   )
 
                     status = self.analytics_oneshot_status(oneshot_inst['_id'])
                     if status:
@@ -274,8 +275,8 @@ class YetiApi(object):
                             result = status['results']
                             return result
                         else:
-                            logging.error('Error Oneshot Processing %s with %s' %
-                                          (name_of_oneshot, value))
+                            logging.error('Error Oneshot Processing %s with %s'
+                                          % (name_of_oneshot, value))
         return result
 
     def analytics_oneshot_status(self, id_oneshot):
