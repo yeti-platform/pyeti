@@ -231,20 +231,21 @@ class YetiApi(object):
         json = {"observables": [{"tags": tags, "value": o} for o in observables]}
         return self._make_post('observable/bulk', json=json)
 
-    def launch_analytics_oneshot(self, name_of_oneshot, value, type_obversable):
-        all_analytics = self.list_analytics_oneshot()
+    def analytics_oneshot_run(self, name_of_oneshot, value, type_obversable):
+        all_analytics = self.analytics_oneshot_list()
 
         oneshot = [ item for item in all_analytics if item['name'] == name_of_oneshot]
 
         if oneshot:
             if type_obversable in oneshot[0]['acts_on']:
-                print(value)
+
                 observable = self.observable_add(value)
+
                 if observable:
                     oneshot_inst = self._make_post('analytics/oneshot/%s/run' % oneshot[0]['id'], data={'id': observable['id']})
-                    status =self.analytics_oneshot_status(oneshot_inst['_id'])
+                    status = self.analytics_oneshot_status(oneshot_inst['_id'])
 
-                    while status['status'] =='running':
+                    while status['status'] == 'running':
                         status = self.analytics_oneshot_status(oneshot_inst['_id'])
                         continue
 
@@ -253,9 +254,7 @@ class YetiApi(object):
                     else:
                         logging.error('Error Oneshot Processing %s with %s' % (name_of_oneshot, value))
 
-        pass
-
-    def analytics_oneshot_status(self,id_oneshot):
+    def analytics_oneshot_status(self, id_oneshot):
         if id_oneshot:
             r = self._make_get('analytics/oneshot/%s/status' % id_oneshot)
             if r:
@@ -265,10 +264,12 @@ class YetiApi(object):
         else:
             logging.error('id_oneshot is empty %s' % id_oneshot)
 
-    def list_analytics_oneshot(self):
+    def analytics_oneshot_list(self):
         r = self._make_get('analytics/oneshot')
         if r:
             return r
+        else:
+            logging.error('Error to list oneshot analytics %s' % self.yeti_url + 'analytics/oneshot')
 
     def _test_connection(self):
         if self._make_post("observablesearch/"):  # replace this with a more meaningful URL
