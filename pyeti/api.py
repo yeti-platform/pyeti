@@ -232,6 +232,16 @@ class YetiApi(object):
         return self._make_post('observable/bulk', json=json)
 
     def analytics_oneshot_run(self, name_of_oneshot, value, type_obversable):
+        """Launch an oneshot analytics on value of an Observable
+
+        Args:
+            name_of_oneshot: Name of oneshot analytic
+            value: the Observable value
+            type_obversable: the Observable type
+
+        Returns:
+            JSON representation of the results of the oneshot analytic .
+        """
 
         oneshot = []
 
@@ -249,8 +259,9 @@ class YetiApi(object):
                 observable = self.observable_add(value)
 
                 if observable:
-                    oneshot_inst = self._make_post('analytics/oneshot/%s/run' % oneshot[0]['id'],
-                                                   data={'id': observable['id']})
+                    oneshot_inst = self._make_post('analytics/oneshot/%s/run' %
+                                                   oneshot[0]['id'], data={'id': observable['id']})
+
                     status = self.analytics_oneshot_status(oneshot_inst['_id'])
                     if status:
                         while status['status'] == 'running':
@@ -261,11 +272,19 @@ class YetiApi(object):
                             result = status['results']
                             return result
                         else:
-                            logging.error('Error Oneshot Processing %s with %s' % (name_of_oneshot, value))
+                            logging.error('Error Oneshot Processing %s with %s' %
+                                          (name_of_oneshot, value))
         return result
 
     def analytics_oneshot_status(self, id_oneshot):
+        """Status of an instance of oneshot analytics
 
+        Args:
+            id_oneshot: the oneshot analytics ID
+
+        Returns:
+            JSON representation of the status of the oneshot analytic .
+        """
         status = {}
 
         if id_oneshot:
@@ -282,6 +301,12 @@ class YetiApi(object):
         return status
 
     def analytics_oneshot_list(self):
+        """List of oneshot analytics
+
+       Returns:
+           JSON representation of the list of the oneshot analytics available on Yeti instance.
+        """
+
         list_analytics = []
 
         r = self._make_get('analytics/oneshot')
@@ -290,7 +315,8 @@ class YetiApi(object):
             list_analytics = r
             return list_analytics
         else:
-            logging.error('Error to list oneshot analytics %s' % self.yeti_url + 'analytics/oneshot')
+            logging.error('Error to list oneshot analytics %s'
+                          % self.yeti_url + 'analytics/oneshot')
 
         return list_analytics
 
