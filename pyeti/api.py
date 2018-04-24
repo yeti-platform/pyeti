@@ -319,8 +319,8 @@ class YetiApi(object):
             list_analytics = r
             return list_analytics
         else:
-            logging.error('Error to list oneshot analytics %s'
-                          , self.yeti_url + 'analytics/oneshot')
+            logging.error('Error to list oneshot analytics %s',
+                          self.yeti_url + 'analytics/oneshot')
 
         return list_analytics
 
