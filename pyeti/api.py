@@ -260,12 +260,14 @@ class YetiApi(object):
 
                 if observable:
                     oneshot_inst = self._make_post('analytics/oneshot/%s/run' %
-                                                   oneshot[0]['id'], data={'id': observable['id']})
+                                                   oneshot[0]['id'],
+                                                   data={'id': observable['id']})
 
                     status = self.analytics_oneshot_status(oneshot_inst['_id'])
                     if status:
                         while status['status'] == 'running':
-                            status = self.analytics_oneshot_status(oneshot_inst['_id'])
+                            status = self.analytics_oneshot_status(
+                                oneshot_inst['_id'])
                             continue
 
                         if status['status'] == 'finished':
@@ -283,7 +285,7 @@ class YetiApi(object):
             id_oneshot: the oneshot analytics ID
 
         Returns:
-            JSON representation of the status of the oneshot analytic .
+            JSON representation of the status of the oneshot analytic.
         """
         status = {}
 
@@ -304,7 +306,8 @@ class YetiApi(object):
         """List of oneshot analytics
 
        Returns:
-           JSON representation of the list of the oneshot analytics available on Yeti instance.
+           JSON representation of the list of the oneshot analytics available
+           on Yeti instance.
         """
 
         list_analytics = []
