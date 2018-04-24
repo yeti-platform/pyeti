@@ -276,7 +276,7 @@ class YetiApi(object):
                             return result
                         else:
                             logging.error('Error Oneshot Processing %s with %s'
-                                          % (name_of_oneshot, value))
+                                          , name_of_oneshot, value)
         return result
 
     def analytics_oneshot_status(self, id_oneshot):
@@ -297,9 +297,9 @@ class YetiApi(object):
                 status = r
                 return status
             else:
-                logging.error('Error to check status %s' % id_oneshot)
+                logging.error('Error to check status %s', id_oneshot)
         else:
-            logging.error('id_oneshot is empty %s' % id_oneshot)
+            logging.error('id_oneshot is empty %s', id_oneshot)
 
         return status
 
@@ -320,7 +320,7 @@ class YetiApi(object):
             return list_analytics
         else:
             logging.error('Error to list oneshot analytics %s'
-                          % self.yeti_url + 'analytics/oneshot')
+                          , self.yeti_url + 'analytics/oneshot')
 
         return list_analytics
 
