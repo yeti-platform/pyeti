@@ -4,7 +4,7 @@ import argparse
 
 from pyeti.scripts import addfiles
 from pyeti.scripts import getfile
-from pyeti.scripts import timesketch
+#from pyeti.scripts import timesketch
 from pyeti import api
 
 def fetch_endpoint_config():
@@ -74,8 +74,8 @@ def main():
         addfiles.run(yeti_api, args)
     if args.command == "getfile":
         getfile.run(yeti_api, args)
-    if args.command == "timesketch":
-        timesketch.run(yeti_api, args)
+    #if args.command == "timesketch":
+    #    timesketch.run(yeti_api, args)
 
 if __name__ == '__main__':
     main()

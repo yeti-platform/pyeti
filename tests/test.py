@@ -16,7 +16,7 @@ class TestAPI(TestCase):
 
         httpd = SocketServer.TCPServer(("", PORT), Handler)
 
-        print "serving at port", PORT
+        print("serving at port", PORT)
         httpd.serve_forever()
 
     def test_have_class(self):

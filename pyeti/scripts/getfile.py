@@ -19,15 +19,15 @@ def run(yeti_api, arguments):
         sys.stdout.flush()
     else:
         tag_names = [t["name"] for t in fileinfo["tags"]]
-        print "File info:"
-        print "{:>15}   {}".format("Added on:", fileinfo["created"])
-        print "{:>15}   {}".format("Filenames:", ", ".join(fileinfo["filenames"]))
-        print "{:>15}   {}".format("Tags:", ", ".join(tag_names))
-        print "{:>15}   {}".format("MIME-type:", fileinfo["mime_type"])
-        print "{:>15}   {}".format("URL:", fileinfo["human_url"])
-        print "\nHashes:"
+        print("File info:")
+        print("{:>15}   {}".format("Added on:", fileinfo["created"]))
+        print("{:>15}   {}".format("Filenames:", ", ".join(fileinfo["filenames"])))
+        print("{:>15}   {}".format("Tags:", ", ".join(tag_names)))
+        print("{:>15}   {}".format("MIME-type:", fileinfo["mime_type"]))
+        print("{:>15}   {}".format("URL:", fileinfo["human_url"]))
+        print ("\nHashes:")
         for h in fileinfo['hashes']:
-            print "{:>15}   {}".format(h['hash']+":", h['value'])
+            print("{:>15}   {}".format(h['hash']+":", h['value']))
 
     if arguments.save:
         with open(arguments.save, 'wb') as dumpfile:
