@@ -27,7 +27,6 @@ setup(name='pyeti',
       install_requires=[
           'timesketch-api-client',
           'requests',
-          'logging',
           'tqdm',
       ],
       test_suite='nose.collector',
