@@ -3,14 +3,14 @@ Python bindings for Yeti's API
 
 ## Installation
 
-`$ python setup.py install` should get you started. After this gets a little more maturity, we will submit it to Pypy for usage with `pip`.
+`$ python3 setup.py install` should get you started. After this gets a little more maturity, we will submit it to Pypy for usage with `pip`.
 
 ## Testing
 
 You can run tests from the root directory by running:
 
-    $ pip install nose
-    $ python setup.py test
+    $ pip3 install nose
+    $ python3 setup.py test
     
 **Note that most tests require a full running install of Yeti on localhost:5000**
 
@@ -180,10 +180,8 @@ print(json.dumps(result, indent=4, sort_keys=True))
     }
 ]
 # Get file contents
-api.observable_file_contents(id="594fff86bf365e6270f8914b")
+api.observable_file_contents(objectid="594fff86bf365e6270f8914b")
 'Hello!\n'
-api.observable_file_contents(hash="e134ced312b3511d88943d57ccd70c83") # you can also use any hash computed above
+api.observable_file_contents(filehash="e134ced312b3511d88943d57ccd70c83") # you can also use any hash computed above
 'Hello!\n'
 ```
-
-
