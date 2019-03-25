@@ -27,7 +27,7 @@ api = pyeti.YetiApi("http://localhost:5000/api/")
 
 ```python
 results = api.observable_add("google.com", ['google'])
-print json.dumps(results, indent=4, sort_keys=True)
+print(json.dumps(results, indent=4, sort_keys=True))
 {
     "context": [],
     "created": "2017-06-25T17:33:51.735000",
@@ -56,9 +56,9 @@ print json.dumps(results, indent=4, sort_keys=True)
 
 ```python
 results = api.observable_bulk_add(["google.com", "bing.com", "yahoo.com"])
-print len(results)
+print(len(results))
 3
-print json.dumps(results[1], indent=4, sort_keys=True)
+print(json.dumps(results[1], indent=4, sort_keys=True))
 {
     "context": [],
     "created": "2017-06-25T17:39:31.051000",
@@ -80,9 +80,9 @@ print json.dumps(results[1], indent=4, sort_keys=True)
 
 ```python
 results = api.observable_add("google.com")
-print results['id']
+print(results['id'])
 info = api.observable_details(results['id'])
-print json.dumps(info, indent=4, sort_keys=True)
+print(json.dumps(info, indent=4, sort_keys=True))
 {
     "context": [],
     "created": "2017-06-25T17:33:51.735000",
@@ -112,7 +112,7 @@ print json.dumps(info, indent=4, sort_keys=True)
 ```python
 api.observable_add("search-domain.com")
 result = api.observable_search(value="search-dom[a-z]+")
-print json.dumps(result, indent=4, sort_keys=True)
+print(json.dumps(result, indent=4, sort_keys=True))
 [
     {
         "context": [],
@@ -137,7 +137,7 @@ print json.dumps(result, indent=4, sort_keys=True)
 
 ```python
 result = api.observable_file_add("/tmp/hello.txt", tags=['benign'])
-print json.dumps(result, indent=4, sort_keys=True)
+print(json.dumps(result, indent=4, sort_keys=True))
 [
     {
         "context": [],
