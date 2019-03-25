@@ -16,7 +16,7 @@ class TestAPI(TestCase):
 
         httpd = SocketServer.TCPServer(("", PORT), Handler)
 
-        print "serving at port", PORT
+        print("serving at port", PORT)
         httpd.serve_forever()
 
     def test_have_class(self):
@@ -35,6 +35,12 @@ class TestAPI(TestCase):
     def test_YetiApi_with_url(self):
         try:
             self.test = pyeti.YetiApi('http://localhost:5000')
+        except TypeError as e:
+            pass  # fail appropriately here.
+
+    def test_YetiApi_with_url_ignore_ssl(self):
+        try:
+            self.test = pyeti.YetiApi('http://localhost:5000', verifySSL=False)
         except TypeError as e:
             pass  # fail appropriately here.
 

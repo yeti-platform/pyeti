@@ -12,15 +12,15 @@ import requests
 class YetiApi(object):
     """Python interface to the Yeti REST API."""
 
-    def __init__(self, url, auth=tuple(), api_key=None, verifySSL=False):
+    def __init__(self, url, auth=tuple(), api_key=None, verifySSL=True):
         super(YetiApi, self).__init__()
         if not url.endswith('/'):
             url += "/"
         self.yeti_url = url
         self.auth = auth
         self.api_key = api_key
-        self._test_connection()
         self.verifySSL = verifySSL
+        self._test_connection()
 
     def entity_search(self, count=50, offset=1, regex=False, **kwargs):
         """Fetches a list of indicators associated with an Entity.
