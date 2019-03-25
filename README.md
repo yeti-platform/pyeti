@@ -111,7 +111,7 @@ print(json.dumps(info, indent=4, sort_keys=True))
 
 ```python
 api.observable_add("search-domain.com")
-result = api.observable_search(value="search-dom[a-z]+")
+result = api.observable_search(value="search-dom[a-z]+", regex=True)
 print(json.dumps(result, indent=4, sort_keys=True))
 [
     {
