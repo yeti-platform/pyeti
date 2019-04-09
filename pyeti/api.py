@@ -351,7 +351,7 @@ class YetiApi(object):
 
         if method == "POST":
             resp = requests.post(url, headers=headers, auth=self.auth,
-            verify=self.verifySSL, **kwargs)
+            verify=self.verify_ssl, **kwargs)
         if method == "GET":
             resp = requests.get(url, auth=self.auth, headers=headers,
             verify=self.verify_ssl)
