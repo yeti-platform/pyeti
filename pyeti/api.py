@@ -357,7 +357,7 @@ class YetiApi(object):
             verify=self.verify_ssl)
         if method == "DELETE":
             resp = requests.delete(url, auth=self.auth, headers=headers,
-            verify=self.verifySSL)
+            verify=self.verify_ssl)
 
         if resp.status_code == 200:
             logging.debug("Success (%s)", resp.status_code)
