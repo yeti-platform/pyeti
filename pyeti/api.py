@@ -354,7 +354,7 @@ class YetiApi(object):
             verify=self.verifySSL, **kwargs)
         if method == "GET":
             resp = requests.get(url, auth=self.auth, headers=headers,
-            verify=self.verifySSL)
+            verify=self.verify_ssl)
         if method == "DELETE":
             resp = requests.delete(url, auth=self.auth, headers=headers,
             verify=self.verifySSL)
