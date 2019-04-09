@@ -23,7 +23,7 @@ import pyeti, json    # json is only used for pretty printing in the examples be
 api = pyeti.YetiApi("http://localhost:5000/api/")
 ```
 
-If you are using a self signed cert on your yeti instance you can set the verifySSL flag to false to ignore warnings.
+If you are using a self signed cert on your yeti instance you can set the `verify_ssl` parameter to `True` to false to ignore warnings.
 Otherwise all ssl connections are verified by default.
 
 ```python
