@@ -12,7 +12,7 @@ import requests
 class YetiApi(object):
     """Python interface to the Yeti REST API."""
 
-    def __init__(self, url, auth=tuple(), api_key=None, verifySSL=True):
+    def __init__(self, url, auth=tuple(), api_key=None, verify_ssl=True):
         super(YetiApi, self).__init__()
         if not url.endswith('/'):
             url += "/"
