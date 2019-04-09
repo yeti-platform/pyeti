@@ -28,7 +28,7 @@ Otherwise all ssl connections are verified by default.
 
 ```python
 import pyeti, json    # json is only used for pretty printing in the examples below 
-api = pyeti.YetiApi("http://localhost:5000/api/",verifySSL=False)
+api = pyeti.YetiApi("http://localhost:5000/api/", verify_ssl=False)
 
 ```
 
