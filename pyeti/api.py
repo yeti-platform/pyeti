@@ -19,7 +19,7 @@ class YetiApi(object):
         self.yeti_url = url
         self.auth = auth
         self.api_key = api_key
-        self.verifySSL = verifySSL
+        self.verify_ssl = verify_ssl
         self._test_connection()
 
     def entity_search(self, count=50, offset=1, regex=False, **kwargs):
