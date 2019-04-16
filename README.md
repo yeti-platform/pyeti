@@ -3,14 +3,14 @@ Python bindings for Yeti's API
 
 ## Installation
 
-`$ python setup.py install` should get you started. After this gets a little more maturity, we will submit it to Pypy for usage with `pip`.
+`$ python3 setup.py install` should get you started. After this gets a little more maturity, we will submit it to Pypy for usage with `pip`.
 
 ## Testing
 
 You can run tests from the root directory by running:
 
-    $ pip install nose
-    $ python setup.py test
+    $ pip3 install nose
+    $ python3 setup.py test
     
 **Note that most tests require a full running install of Yeti on localhost:5000**
 
@@ -23,11 +23,21 @@ import pyeti, json    # json is only used for pretty printing in the examples be
 api = pyeti.YetiApi("http://localhost:5000/api/")
 ```
 
+If you are using a self signed cert on your yeti instance you can set the `verify_ssl` parameter to `True` to false to ignore warnings.
+Otherwise all ssl connections are verified by default.
+
+```python
+import pyeti, json    # json is only used for pretty printing in the examples below 
+api = pyeti.YetiApi("http://localhost:5000/api/", verify_ssl=False)
+
+```
+
+
 ### Adding observables
 
 ```python
 results = api.observable_add("google.com", ['google'])
-print json.dumps(results, indent=4, sort_keys=True)
+print(json.dumps(results, indent=4, sort_keys=True))
 {
     "context": [],
     "created": "2017-06-25T17:33:51.735000",
@@ -56,9 +66,9 @@ print json.dumps(results, indent=4, sort_keys=True)
 
 ```python
 results = api.observable_bulk_add(["google.com", "bing.com", "yahoo.com"])
-print len(results)
+print(len(results))
 3
-print json.dumps(results[1], indent=4, sort_keys=True)
+print(json.dumps(results[1], indent=4, sort_keys=True))
 {
     "context": [],
     "created": "2017-06-25T17:39:31.051000",
@@ -80,9 +90,9 @@ print json.dumps(results[1], indent=4, sort_keys=True)
 
 ```python
 results = api.observable_add("google.com")
-print results['id']
+print(results['id'])
 info = api.observable_details(results['id'])
-print json.dumps(info, indent=4, sort_keys=True)
+print(json.dumps(info, indent=4, sort_keys=True))
 {
     "context": [],
     "created": "2017-06-25T17:33:51.735000",
@@ -111,8 +121,8 @@ print json.dumps(info, indent=4, sort_keys=True)
 
 ```python
 api.observable_add("search-domain.com")
-result = api.observable_search(value="search-dom[a-z]+")
-print json.dumps(result, indent=4, sort_keys=True)
+result = api.observable_search(value="search-dom[a-z]+", regex=True)
+print(json.dumps(result, indent=4, sort_keys=True))
 [
     {
         "context": [],
@@ -137,7 +147,7 @@ print json.dumps(result, indent=4, sort_keys=True)
 
 ```python
 result = api.observable_file_add("/tmp/hello.txt", tags=['benign'])
-print json.dumps(result, indent=4, sort_keys=True)
+print(json.dumps(result, indent=4, sort_keys=True))
 [
     {
         "context": [],
@@ -180,10 +190,8 @@ print json.dumps(result, indent=4, sort_keys=True)
     }
 ]
 # Get file contents
-api.observable_file_contents(id="594fff86bf365e6270f8914b")
+api.observable_file_contents(objectid="594fff86bf365e6270f8914b")
 'Hello!\n'
-api.observable_file_contents(hash="e134ced312b3511d88943d57ccd70c83") # you can also use any hash computed above
+api.observable_file_contents(filehash="e134ced312b3511d88943d57ccd70c83") # you can also use any hash computed above
 'Hello!\n'
 ```
-
-

@@ -25,7 +25,7 @@ def run(yeti_api, arguments):
         print("{:>15}   {}".format("Tags:", ", ".join(tag_names)))
         print("{:>15}   {}".format("MIME-type:", fileinfo["mime_type"]))
         print("{:>15}   {}".format("URL:", fileinfo["human_url"]))
-        print ("\nHashes:")
+        print("\nHashes:")
         for h in fileinfo['hashes']:
             print("{:>15}   {}".format(h['hash']+":", h['value']))
 

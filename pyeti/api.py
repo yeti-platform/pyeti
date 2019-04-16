@@ -12,13 +12,14 @@ import requests
 class YetiApi(object):
     """Python interface to the Yeti REST API."""
 
-    def __init__(self, url, auth=tuple(), api_key=None):
+    def __init__(self, url, auth=tuple(), api_key=None, verify_ssl=True):
         super(YetiApi, self).__init__()
         if not url.endswith('/'):
             url += "/"
         self.yeti_url = url
         self.auth = auth
         self.api_key = api_key
+        self.verify_ssl = verify_ssl
         self._test_connection()
 
     def entity_search(self, count=50, offset=1, regex=False, **kwargs):
@@ -349,11 +350,14 @@ class YetiApi(object):
             headers.update({"X-Api-Key": self.api_key})
 
         if method == "POST":
-            resp = requests.post(url, headers=headers, auth=self.auth, **kwargs)
+            resp = requests.post(url, headers=headers, auth=self.auth,
+            verify=self.verify_ssl, **kwargs)
         if method == "GET":
-            resp = requests.get(url, auth=self.auth, headers=headers)
+            resp = requests.get(url, auth=self.auth, headers=headers,
+            verify=self.verify_ssl)
         if method == "DELETE":
-            resp = requests.delete(url, auth=self.auth, headers=headers)
+            resp = requests.delete(url, auth=self.auth, headers=headers,
+            verify=self.verify_ssl)
 
         if resp.status_code == 200:
             logging.debug("Success (%s)", resp.status_code)
@@ -362,7 +366,6 @@ class YetiApi(object):
             return resp.content
         else:
             logging.error("An error occurred (%s): %s", resp.status_code, url)
-
 
 if __name__ == '__main__':
     pass
