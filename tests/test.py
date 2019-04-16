@@ -38,6 +38,12 @@ class TestAPI(TestCase):
         except TypeError as e:
             pass  # fail appropriately here.
 
+    def test_YetiApi_with_url_ignore_ssl(self):
+        try:
+            self.test = pyeti.YetiApi('http://localhost:5000', verify_ssl=False)
+        except TypeError as e:
+            pass  # fail appropriately here.
+
     def test_has_analysis_match(self):
         api = pyeti.YetiApi(self.url)
         with self.assertRaises(TypeError) as context:
