@@ -97,7 +97,7 @@ class TestAPI(TestCase):
     def test_observable_file_add(self):
         """Creates a temporary file and attempts to upload it to Yeti."""
         with tempfile.NamedTemporaryFile('wb', delete=False) as f:
-            f.write("content")
+            f.write(b"content")
             filename = f.name
         fileinfo = self.api.observable_file_add(filename, ['file_tag'])
         os.remove(filename)
@@ -109,7 +109,7 @@ class TestAPI(TestCase):
 
     def test_file_download_by_id(self):
         with tempfile.NamedTemporaryFile('wb', delete=False) as f:
-            f.write("content")
+            f.write(b"content")
             filename = f.name
         fileinfo = self.api.observable_file_add(filename, ['file_tag'])[0]
         os.remove(filename)
@@ -118,7 +118,7 @@ class TestAPI(TestCase):
 
     def test_file_download_by_hash(self):
         with tempfile.NamedTemporaryFile('wb', delete=False) as f:
-            f.write("content")
+            f.write(b"content")
             filename = f.name
         self.api.observable_file_add(filename, ['file_tag'])
         os.remove(filename)
