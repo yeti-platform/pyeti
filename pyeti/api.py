@@ -348,7 +348,6 @@ class YetiApi(object):
         headers = {'Accept': 'application/json'}
         if self.api_key:
             headers.update({"X-Api-Key": self.api_key})
-
         if method == "POST":
             resp = requests.post(url, headers=headers, auth=self.auth,
             verify=self.verify_ssl, **kwargs)

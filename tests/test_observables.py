@@ -76,7 +76,7 @@ class TestAPI(TestCase):
             self.assertIn('http://', url['value'])
 
     def test_observable_refang(self):
-        """Adds an defanged observable and tests that it is refanged."""
+        """Adds a defanged observable and tests that it is refanged."""
         result = self.api.observable_add('hxxp://test.com/')
         self.assertEqual(result['value'], 'http://test.com/')
 
@@ -87,7 +87,7 @@ class TestAPI(TestCase):
         self.assertEqual(result['value'], 'test.com')
 
     def test_observable_url_normalize(self):
-        """Adds an defanged observable and tests that it is refanged."""
+        """Adds a valid URL is normalized."""
         result = self.api.observable_add('http://test.com')
         self.assertEqual(result['value'], 'http://test.com/')
 
