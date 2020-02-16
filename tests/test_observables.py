@@ -63,13 +63,13 @@ class TestAPI(TestCase):
 
     def test_bulk_observable_add(self):
         """Adds an observables in bulk."""
-        observables = ["{}{}.com".format(_random_domain(), i) for i in xrange(20)]
+        observables = ["{}{}.com".format(_random_domain(), i) for i in range(20)]
         info = self.api.observable_bulk_add(observables, ['bulk'])
         self.assertEqual(len(info), 20)
 
     def test_bulk_observable_refang_add(self):
         """Adds defanged observables in bulk."""
-        observables = ["hxxp://{}{}.com".format(_random_domain(), i) for i in xrange(20)]
+        observables = ["hxxp://{}{}.com".format(_random_domain(), i) for i in range(20)]
         info = self.api.observable_bulk_add(observables, ['bulk'])
         self.assertEqual(len(info), 20)
         for url in info:
