@@ -114,7 +114,7 @@ class TestAPI(TestCase):
         fileinfo = self.api.observable_file_add(filename, ['file_tag'])[0]
         os.remove(filename)
         content_by_id = self.api.observable_file_contents(objectid=fileinfo['id'])
-        self.assertEqual(content_by_id, "content")
+        self.assertEqual(content_by_id, b"content")
 
     def test_file_download_by_hash(self):
         with tempfile.NamedTemporaryFile('wb', delete=False) as f:
@@ -125,7 +125,7 @@ class TestAPI(TestCase):
         # SHA256 of "content"
         filehash = "ed7002b439e9ac845f22357d822bac1444730fbdb6016d3ec9432297b9ec9f73"
         content_by_hash = self.api.observable_file_contents(filehash=filehash)
-        self.assertEqual(content_by_hash, "content")
+        self.assertEqual(content_by_hash, b"content")
 
     def test_analysis_match(self):
         """Calls the match endpoint with a known and an unknown domain."""
