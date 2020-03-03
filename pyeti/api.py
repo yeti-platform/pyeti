@@ -81,6 +81,34 @@ class YetiApi(object):
         json = {"observables": observables}
         return self._make_post("analysis/match", json=json)
 
+    def link_add(self, link_src, link_dst, type_src="observable", type_dst="observable", description=None, source="API"):
+        """Add link between to entities to the dataset
+
+        Args:
+            link_src: The internal Yeti ID for the source entity to link
+            link_dst: The internal Yeti ID for the destination entity to link
+            type_src: Type of the entity (either "observable", "entity", or "indicator")
+            type_dst: Type of the entity (either "observable", "entity", or "indicator")
+            description: A string description of the link
+            source: A string representing the source of the data. Defaults to "API".
+
+        Returns:
+            JSON representation of the created link.
+        """
+
+        json = {
+            "link_src": link_src,
+            "link_dst": link_dst,
+            "type_src": type_src,
+            "type_dst": type_dst,
+            "source": source,
+        }
+
+        if description is not None:
+            json["description"] = description
+
+        return self._make_post('link/', json=json)
+
     def observable_search(self, count=50, offset=1, regex=False, **kwargs):
         """Search for observables.
 
@@ -214,11 +242,11 @@ class YetiApi(object):
         else:
             raise ValueError("You need to pass an id or hash parameter.")
 
-    def observable_bulk_add(self, observables, tags=None):
+    def observable_bulk_add(self, observables, tags=None, context=None, source="API"):
         """Add an observable to the dataset
 
         Args:
-            value: the Observable value
+            observables: list of Observable value
             tags: An array of strings representing tags
             context: A dictionary object with context information
             source: A string representing the source of the data. Defaults to
@@ -229,7 +257,9 @@ class YetiApi(object):
         """
         if tags is None:
             tags = []
-        json = {"observables": [{"tags": tags, "value": o} for o in observables]}
+        if context is None:
+            context = {}
+        json = {"observables": [{"tags": tags, "value": o, "source": source, "context": context} for o in observables]}
         return self._make_post('observable/bulk', json=json)
 
     def analytics_oneshot_run(self, name_of_oneshot, value, type_obversable):
