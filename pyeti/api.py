@@ -108,6 +108,21 @@ class YetiApi(object):
         """
         return self._make_get("observable/{}".format(objectid))
 
+    """Get details neighbors of observables of an observable.
+            Args:
+                value: A string value of  the observable
+
+            Returns:
+                JSON representation of the requested Observable.
+    """
+    def neighbors_observables(self, value):
+
+        r = self.observable_search(value=value)
+
+        object_id = r[0]['id']
+        return self._make_post('neighbors/tuples/Observable/%s/Observable' %
+                               object_id)
+
     def observable_add(self, value, tags=None, context=None, source="API"):
         """Add an observable to the dataset
 
