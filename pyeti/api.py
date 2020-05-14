@@ -24,17 +24,17 @@ class YetiApi(object):
 
     def entity_search(self, count=50, offset=1, regex=False, **kwargs):
         """Fetches a list of indicators associated with an Entity.
-
-        Args:
-            count: How many Entities you want to fetch.
-            offset: How many sets of *count* Entities you want to skip
+            :param count: How many Entities you want to fetch.
+            :type count: int
+            :param offset: How many sets of *count* Entities you want to skip
                     (total skipped = offset * count)
-            regex: Use regular expressions to Search.
-            kwargs: Remaining keyword arguments will be transformed in a JSON
+            :type offset: int
+            :param regex: Use regular expressions to Search.
+            :type regex: bool
+            :param kwargs: Remaining keyword arguments will be transformed in a JSON
                     object that will act as the filter.
-
-        Returns:
-          A list of indicators.
+            :type kwargs: dict
+          :return: A list of indicators.
         """
         json = {
             "filter": kwargs,
@@ -46,23 +46,20 @@ class YetiApi(object):
         }
         return self._make_post("entitysearch/", json=json)
 
-    def entity_get(self, objectid):
+    def entity_get(self, entity_id):
         """Fetches an entity by ID.
-
+            :param entity_id: ID of the entity
         Returns:
            JSON representation of the requested Entity."""
-        return self._make_get("entity/{}".format(objectid))
+        return self._make_get("entity/{}".format(entity_id))
 
     def related_indicators(self, entity, **kwargs):
         """Fetches indicators linked to a given entity.
-
-        Args:
-           entity: JSON dict representing the Entity to search indicators for.
-           kwargs: Remaining keyword arguments will be transformed in a JSON
+           :param entity: JSON dict representing the Entity to search indicators for.
+           :type entity: str
+           :param kwargs: Remaining keyword arguments will be transformed in a JSON
                    object that will act as the filter.
-
-        Returns:
-           A list of matching JSON Indicators.
+           :return: A list of matching JSON Indicators.
         """
         url = "neighbors/tuples/{0:s}/{1:s}/indicator".format(
             entity['type'], entity['id'])
@@ -71,46 +68,43 @@ class YetiApi(object):
 
     def analysis_match(self, observables):
         """Matches a list of observables against Yeti indicators.
+            :param observables: An array of strings representing observables
+            :type observables: list
 
-        Args:
-            observables: An array of strings representing observables
-
-        Returns:
-            JSON representation of match response.
+            :return: JSON representation of match response.
         """
         json = {"observables": observables}
         return self._make_post("analysis/match", json=json)
 
     def observable_search(self, count=50, offset=1, regex=False, **kwargs):
         """Search for observables.
-
-        Args:
-            count: How many Observables you want to fetch.
-            offset: How many sets of *count* Observables you want to skip
+            :param count: How many Observables you want to fetch.
+            :type count: int
+            :param offset: How many sets of *count* Observables you want to skip
                     (total skipped = offset * count)
-            regex: Use regular expressions to Search.
-            kwargs: Remaining keyword arguments will be transformed in a JSON
+            :type offset: int
+            :param regex: Use regular expressions to Search.
+            :type regex: bool
+            :param kwargs: Remaining keyword arguments will be transformed in a JSON
                     object that will act as the filter.
-
-        Returns:
-            Array of JSON representations of matching Observables.
+            :type kwargs: dict
+            :return: Array of JSON representations of matching Observables.
         """
         json = {"filter": kwargs, "params": {"page": offset, "range": count, "regex": regex}}
         return self._make_post("observablesearch/", json=json)
 
     def observable_details(self, objectid):
         """Get details on an Observable.
-        Args:
-            objectid: A string representing the observable's ObjectID
-
-        Returns:
-            JSON representation of the requested Observable.
+            :param objectid: A string representing the observable's ObjectID
+            :type objectid: str
+            :return: JSON representation of the requested Observable.
         """
         return self._make_get("observable/{}".format(objectid))
 
     def neighbors_observables(self, objectid):
         """
         :param objectid:
+        :type objectid: str
         :return: JSON representation of the requested Observable.
         """
 
@@ -120,6 +114,7 @@ class YetiApi(object):
     def entity_to_observables(self, entityid):
         """ Get observables linked to an entity
         :param entityid: id of the entity
+        :type entityid: str
         :return: JSON representation of the observables linked to an entity
         """
         return self._make_post('neighbors/tuples/Entity/%s/Observable' %
@@ -129,6 +124,7 @@ class YetiApi(object):
         """
         Get entities linked to an entity
         :param entityid: id of the entity
+        :type entityid: str
         :return: JSON representation of the entities linked to an entity
         """
         return self._make_post('neighbors/tuples/Entity/%s/Entity' %
@@ -138,6 +134,7 @@ class YetiApi(object):
         """
         Get entities linked to an observable
         :param objectid: id of the observable
+        :type objectid: str
         :return: JSON representation of the entities linked to an observable
         """
         return self._make_post('neighbors/tuples/Observable/%s/Entity' %
@@ -145,16 +142,16 @@ class YetiApi(object):
 
     def observable_add(self, value, tags=None, context=None, source="API"):
         """Add an observable to the dataset
-
-        Args:
-            value: the Observable value
-            tags: An array of strings representing tags
-            context: A dictionary object with context information
-            source: A string representing the source of the data. Defaults to
+            :param value: the Observable value
+            :type value: str
+            :param tags: list of strings representing tags
+            :type tags: list
+            :param context: A dictionary object with context information
+            :type context: dict
+            :param source: A string representing the source of the data. Defaults to
                     "API".
-
-        Returns:
-            JSON representation of the created observable.
+            :type source: str
+            :return: dict JSON representation of the created observable.
         """
         if tags is None:
             tags = []
@@ -171,7 +168,6 @@ class YetiApi(object):
     def observable_change(self, objectid, tags=None, context=None):
         """Add tags to an observable.
 
-        Args:
             objectid: The observable's ObjectID
             tags: Tags to add
             context: Context to add
@@ -190,27 +186,22 @@ class YetiApi(object):
     def observable_delete(self, objectid):
         """Deletes an observable.
 
-        Args:
-            objectid: The observable's ObjectID
 
-        Returns:
-            Operation status in JSON.
+            :param objectid: The observable's ObjectID
+            :type objectid:str
+            :return: Operation status in JSON.
         """
         self._make_delete('observable/{}'.format(objectid))
         return {'status': 'deleted', 'id': objectid}
 
     def observable_file_add(self, path, tags=None, context=None):
         """Upload a file to the dataset
-
-        Args:
-            path: The path to the file
-            tags: An array of strings representing tags
-            context: A dictionary object with context information
-            source: A string representing the source of the data. Defaults to
+            :param path: The path to the file
+            :param tags: An array of strings representing tags
+            :param context: A dictionary object with context information
+            :param source: A string representing the source of the data. Defaults to
                     "API".
-
-        Returns:
-            JSON representation of the created observable.
+            :return:JSON representation of the created observable.
         """
         if tags is None:
             tags = []
@@ -235,12 +226,9 @@ class YetiApi(object):
 
     def observable_file_contents(self, objectid=None, filehash=None):
         """Fetches the content of a File observable.
-        Args:
-            objectid: The observable's ObjectID.
-            filehash: The observable's hash.
-
-        Returns:
-            Binary data containing the file's contents.
+            :param objectid: The observable's ObjectID.
+            :param filehash: The observable's hash.
+            :return: Binary data containing the file's contents.
         """
         if objectid is not None:
             return self._make_get('file/get/id/{}'.format(objectid))
@@ -250,17 +238,9 @@ class YetiApi(object):
             raise ValueError("You need to pass an id or hash parameter.")
 
     def observable_bulk_add(self, observables, tags=None):
-        """Add an observable to the dataset
-
-        Args:
-            value: the Observable value
-            tags: An array of strings representing tags
-            context: A dictionary object with context information
-            source: A string representing the source of the data. Defaults to
-                    "API".
-
-        Returns:
-            JSON representation of the created observable.
+        """Add an observables in bulk mode to the dataset
+           :param observables: list observables to add in yeti
+            :return JSON representation of the created observable.
         """
         if tags is None:
             tags = []
@@ -270,13 +250,11 @@ class YetiApi(object):
     def analytics_oneshot_run(self, name_of_oneshot, value, type_obversable):
         """Launch an oneshot analytics on value of an Observable
 
-        Args:
-            name_of_oneshot: Name of oneshot analytic
-            value: the Observable value
-            type_obversable: the Observable type
+            :param name_of_oneshot: Name of oneshot analytic
+            :param value: the Observable value
+            :param type_obversable: the Observable type
 
-        Returns:
-            JSON representation of the results of the oneshot analytic .
+            :return:JSON representation of the results of the oneshot analytic .
         """
 
         oneshot = []
@@ -318,11 +296,10 @@ class YetiApi(object):
     def analytics_oneshot_status(self, id_oneshot):
         """Status of an instance of oneshot analytics
 
-        Args:
-            id_oneshot: the oneshot analytics ID
+            :param id_oneshot: the oneshot analytics ID
+            :type id_oneshot: str
 
-        Returns:
-            JSON representation of the status of the oneshot analytic.
+            :return:JSON representation of the status of the oneshot analytic.
         """
         status = {}
 
@@ -342,8 +319,7 @@ class YetiApi(object):
     def analytics_oneshot_list(self):
         """List of oneshot analytics
 
-       Returns:
-           JSON representation of the list of the oneshot analytics available
+          :return: JSON representation of the list of the oneshot analytics available
            on Yeti instance.
         """
 
