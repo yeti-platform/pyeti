@@ -108,20 +108,40 @@ class YetiApi(object):
         """
         return self._make_get("observable/{}".format(objectid))
 
-    """Get details neighbors of observables of an observable.
-            Args:
-                value: A string value of  the observable
+    def neighbors_observables(self, objectid):
+        """
+        :param objectid:
+        :return: JSON representation of the requested Observable.
+        """
 
-            Returns:
-                JSON representation of the requested Observable.
-    """
-    def neighbors_observables(self, value):
-
-        r = self.observable_search(value=value)
-
-        object_id = r[0]['id']
         return self._make_post('neighbors/tuples/Observable/%s/Observable' %
-                               object_id)
+                               objectid)
+
+    def entity_to_observables(self, entityid):
+        """ Get observables linked to an entity
+        :param entityid: id of the entity
+        :return: JSON representation of the observables linked to an entity
+        """
+        return self._make_post('neighbors/tuples/Entity/%s/Observable' %
+                               entityid)
+
+    def entity_to_entities(self, entityid):
+        """
+        Get entities linked to an entity
+        :param entityid: id of the entity
+        :return: JSON representation of the entities linked to an entity
+        """
+        return self._make_post('neighbors/tuples/Entity/%s/Entity' %
+                               entityid)
+
+    def observable_to_entities(self, objectid):
+        """
+        Get entities linked to an observable
+        :param objectid: id of the observable
+        :return: JSON representation of the entities linked to an observable
+        """
+        return self._make_post('neighbors/tuples/Observable/%s/Entity' %
+                               objectid)
 
     def observable_add(self, value, tags=None, context=None, source="API"):
         """Add an observable to the dataset
