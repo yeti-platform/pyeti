@@ -127,7 +127,7 @@ class YetiApi(object):
         :type entityid: str
         :return: JSON representation of the entities linked to an entity
         """
-        return self._make_post('neighbors/tuples/Entity/%s/Entity' %
+        return self._make_post('neighbors/tuples/entity/%s/entity' %
                                entityid)
 
     def observable_to_entities(self, objectid):
@@ -247,50 +247,46 @@ class YetiApi(object):
         json = {"observables": [{"tags": tags, "value": o} for o in observables]}
         return self._make_post('observable/bulk', json=json)
 
-    def analytics_oneshot_run(self, name_of_oneshot, value, type_obversable):
-        """Launch an oneshot analytics on value of an Observable
-
-            :param name_of_oneshot: Name of oneshot analytic
-            :param value: the Observable value
-            :param type_obversable: the Observable type
-
-            :return:JSON representation of the results of the oneshot analytic .
-        """
-
-        oneshot = []
-
-        result = {}
-
+    def get_analytic_oneshot(self, name_of_oneshot):
         all_analytics = self.analytics_oneshot_list()
 
         if all_analytics:
             oneshot = [item for item in all_analytics
                        if item['name'] == name_of_oneshot]
+            if oneshot:
+                return oneshot[0]
 
-        if oneshot:
-            if type_obversable in oneshot[0]['acts_on']:
+    def analytics_oneshot_run(self, oneshot, observable):
+        """Launch an oneshot analytics on value of an Observable
 
-                observable = self.observable_add(value)
+            :param oneshot: Name of oneshot analytic
+            :type oneshot: dict
+            :param observable: Observable
+            :type observable: dict
 
-                if observable:
-                    oneshot_inst = self._make_post('analytics/oneshot/%s/run' %
-                                                   oneshot[0]['id'],
-                                                   data={
-                                                       'id': observable['id']})
+            :return:JSON representation of the results of the oneshot analytic .
+        """
+        result = {}
 
-                    status = self.analytics_oneshot_status(oneshot_inst['_id'])
-                    if status:
-                        while status['status'] == 'running':
-                            status = self.analytics_oneshot_status(
-                                oneshot_inst['_id'])
-                            continue
+        one_shot_inst = self._make_post('analytics/oneshot/%s/run' %
+                                        oneshot['id'],
+                                        data={
+                                            'id': observable['id']})
 
-                        if status['status'] == 'finished':
-                            result = status['results']
-                            return result
-                        else:
-                            logging.error('Error Oneshot Processing %s with %s'
-                                          , name_of_oneshot, value)
+        status = self.analytics_oneshot_status(one_shot_inst['_id'])
+        if status:
+            while status['status'] == 'running' or \
+                    status['status'] == 'pending':
+                status = self.analytics_oneshot_status(
+                    one_shot_inst['_id'])
+                continue
+
+            if status['status'] == 'finished':
+                result = status['results']
+                return result
+            else:
+                logging.error('Error Oneshot Processing %s with %s'
+                              , oneshot['id'], observable['value'])
         return result
 
     def analytics_oneshot_status(self, id_oneshot):
