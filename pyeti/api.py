@@ -120,25 +120,67 @@ class YetiApi(object):
         return self._make_post('neighbors/tuples/Entity/%s/Observable' %
                                entityid)
 
-    def entity_to_entities(self, entityid):
+    def entity_to_malware(self, entityid):
+        return self._entity_to_entities(entityid, 'malware')
+
+    def entity_to_actor(self, entityid):
+        return self._entity_to_entities(entityid, 'actor')
+
+    def entity_to_company(self, entityid):
+        return self._entity_to_entities(entityid, 'company')
+
+    def entity_to_campaign(self, entityid):
+        return self._entity_to_entities(entityid, 'campaign')
+
+    def entity_to_indicator(self, entityid):
+        return self._get_observable_to_entities(entityid, 'indicator')
+
+    def entity_to_exploit(self, entityid):
+        return self._get_observable_to_entities(entityid, 'exploit')
+
+    def entity_to_exploitkit(self, entityid):
+        return self._get_observable_to_entities(entityid, 'exploitkit')
+
+    def _entity_to_entities(self, entityid, entity_name):
         """
         Get entities linked to an entity
         :param entityid: id of the entity
         :type entityid: str
         :return: JSON representation of the entities linked to an entity
         """
-        return self._make_post('neighbors/tuples/entity/%s/entity' %
-                               entityid)
+        return self._make_post('neighbors/tuples/entity/%s/%s' %
+                               (entityid, entity_name))
 
-    def observable_to_entities(self, objectid):
+    def observable_to_malware(self, objectid):
+        return self._get_observable_to_entities(objectid, 'malware')
+
+    def observable_to_actor(self, objectid):
+        return self._get_observable_to_entities(objectid, 'actor')
+
+    def observable_to_company(self, objectid):
+        return self._get_observable_to_entities(objectid, 'company')
+
+    def observable_to_campaign(self, objectid):
+        return self._get_observable_to_entities(objectid, 'campaign')
+
+    def observable_to_indicator(self, objectid):
+        return self._get_observable_to_entities(objectid, 'indicator')
+
+    def observable_to_exploit(self, objectid):
+        return self._get_observable_to_entities(objectid, 'exploit')
+
+    def observable_to_exploitkit(self, objectid):
+        return self._get_observable_to_entities(objectid, 'exploitkit')
+
+    def _get_observable_to_entities(self, objectid, entity_name):
         """
         Get entities linked to an observable
         :param objectid: id of the observable
         :type objectid: str
         :return: JSON representation of the entities linked to an observable
         """
-        return self._make_post('neighbors/tuples/Observable/%s/Entity' %
-                               objectid)
+        return self._make_post('neighbors/tuples/observable/%s/%s' %
+                               (objectid, entity_name))
 
     def observable_add(self, value, tags=None, context=None, source="API"):
         """Add an observable to the dataset
