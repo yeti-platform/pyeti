@@ -5,6 +5,7 @@
 
 import logging
 import os
+import time
 
 import requests
 
@@ -321,6 +322,7 @@ class YetiApi(object):
                     status['status'] == 'pending':
                 status = self.analytics_oneshot_status(
                     one_shot_inst['_id'])
+                time.sleep(1)
                 continue
 
             if status['status'] == 'finished':
