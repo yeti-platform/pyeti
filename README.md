@@ -15,7 +15,7 @@ $ pip3 install pyeti-python
 ``` 
 
 Once installed the first thing to do is to get your API key from the Yeti interface.
-[YETI API](yeti_api.png)
+[YETI API](https://raw.githubusercontent.com/fr0gger/pyeti/master/yeti_api.png)
 
 Then you can configure your script with the following information to test the connection:
 ```python
