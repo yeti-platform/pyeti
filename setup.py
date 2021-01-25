@@ -12,7 +12,7 @@ from setuptools import find_packages
 with open("README.md", "r", encoding="utf-8") as readme_fp:
     long_description = readme_fp.read()
 
-setup(name='pyeti-python',
+setup(name='pyeti-python3',
       version="1.0",
       description='Revival version of pyeti, the API for Yeti Threat Intel Platform.',
       long_description=long_description,
