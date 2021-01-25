@@ -1,6 +1,6 @@
 # pyeti-python
-Pyeti-Python (pyeti) is the bundle use to interface with the YETI API. This is the new package that can be installed directly with pip.
-Pyeti-python allows you to extract data from YETI such as specific observables (malware, IP, domains ...). It can be used to plug in your own tool and enrich your Threat Intelligence feed with Yeti.
+Pyeti-Python (pyeti) is the bundle uses to interface with the YETI API. This is the new package that can be installed directly with pip.
+Pyeti-python allows you to extract data from YETI such as specific observables (malware, IP, domains...). It can be used to plug in your own tool and enrich your Threat Intelligence feed with Yeti.
 
 ## Getting Started
 To install it you can clone the repo and run the following command:
