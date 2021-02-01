@@ -97,4 +97,4 @@ api.observable_file_contents(filehash="e134ced312b3511d88943d57ccd70c83") # you 
 'Hello!\n'
 ```
 # License
-This project is licensed under the Apache License - see the LICENSE.md file for details
+This project is licensed under the Apache License - see the [LICENSE.md](https://github.com/fr0gger/pyeti/blob/master/LICENSE.md) file for details
