@@ -183,7 +183,8 @@ class YetiApi(object):
         return self._make_post('neighbors/tuples/observable/%s/%s' %
                                (objectid, entity_name))
 
-    def observable_add(self, value, tags=None, context=None, source="API"):
+    def observable_add(self, value, tags=None, context=None, description=None,
+                       source="API"):
         """Add an observable to the dataset
             :param value: the Observable value
             :type value: str
@@ -191,6 +192,8 @@ class YetiApi(object):
             :type tags: list
             :param context: A dictionary object with context information
             :type context: dict
+            :param description: description of the observable
+            :type description: str
             :param source: A string representing the source of the data. Defaults to
                     "API".
             :type source: str
@@ -204,16 +207,18 @@ class YetiApi(object):
             "tags": tags,
             "value": value,
             "source": source,
-            "context": context
+            "context": context,
+            "description": description
         }
         return self._make_post('observable/', json=json)
 
-    def observable_change(self, objectid, tags=None, context=None):
+    def observable_change(self, objectid, tags=None, context=None, description=None):
         """Add tags to an observable.
 
             objectid: The observable's ObjectID
             tags: Tags to add
             context: Context to add
+            description: description of the observable
 
         Returns:
             JSON representation of the updated observable
@@ -222,7 +227,8 @@ class YetiApi(object):
             tags = []
         if context is None:
             context = {}
-        json = {"id": objectid, "tags": tags, "context": context}
+        json = {"id": objectid, "tags": tags, "context": context,
+                'description': description}
         result = self._make_post('observable/', json=json)
         return result
 
