@@ -382,6 +382,16 @@ class YetiApi(object):
 
         return list_analytics
 
+    def investigation_list(self):
+        endpoint = 'investigationsearch/'
+        r = self._make_post(endpoint)
+        if r:
+            return r
+        else:
+            logging.error('Error to list investigation %s'
+                          % self.yeti_url + endpoint)
+            return []
+
     def _test_connection(self):
         if self._make_post("observablesearch/"):  # replace this with a more meaningful URL
             logging.debug("Connection to %s successful", self.yeti_url)
