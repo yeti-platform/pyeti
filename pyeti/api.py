@@ -384,6 +384,9 @@ class YetiApi(object):
         return list_analytics
 
     def investigation_list(self):
+        """List of investigations
+        :return: json with the investigation
+        """
         endpoint = 'investigationsearch/'
         r = self._make_post(endpoint)
         if r:
@@ -394,6 +397,11 @@ class YetiApi(object):
             return []
 
     def investigation_by_name(self, name):
+        """Choose investigation by name
+
+        :param name: name of the investigation
+        :return: json of the investigation with nodes and links
+        """
         endpoint = 'investigationsearch/'
         r = self._make_post(endpoint)
         if r:
@@ -405,31 +413,50 @@ class YetiApi(object):
                           % self.yeti_url + endpoint)
 
     def investigation_by_id(self, invest_id):
+        """
+        :param invest_id: id of the investigation selected
+        :return: json of the investigation with nodes and links
+        """
         endpoint = 'investigation/%s' % invest_id
         r = self._make_get(endpoint)
         if r:
             return r
 
+    def investigation_add_observable(self, invest, obs):
+        """ Adding an observable to a investigation
+        :param invest: Investigation object json
+        :param obs: Observable object json
+        :return: Investigation object json udpated
+        """
+        return self._investigation_add_node(invest, obs)
 
-    def investigation_add_observable(self, id_invest,obs):
-        return self._investigation_add_node(id_invest, obs)
+    def investigation_add_entity(self, invest, entity):
+        """ Adding an entity to a investigation
+                :param invest: Investigation object json
+                :param entity: Entity object json
+                :return: Investigation object json udpated
+        """
+        return self._investigation_add_node(invest, entity, type_obj='entity')
 
-    def investigation_add_entity(self, id_invest, obs):
-        return self._investigation_add_node(id_invest, obs, type_obj='entity')
+    def _investigation_add_node(self, invest, obs, type_obj='observable'):
 
-    def _investigation_add_node(self, id_invest, obs, type_obj='observable'):
-
-        endpoint = 'investigation/add/%s' % id_invest
+        endpoint = 'investigation/add/%s' % invest['_id']
         data = {"links": [], "nodes": [{"$id": {"$oid": obs['id']},
                                                 "$ref":type_obj}]}
         r = self._make_post(endpoint, json=data)
 
         return r
 
-
-    def investigation_add_link(self, id_invest, obs_src, obs_dst, label):
+    def investigation_add_link(self, invest, obs_src, obs_dst, label):
+        """ Adding a link between two observable in a investigation
+                :param invest: Investigation object json
+                :param obs_src: Observable source
+                :param obs_dst: Observable destination
+                :param label: label on the link between two observables
+                :return: Investigation object json updated
+        """
         data = {'links': [], 'nodes': []}
-        endpoint = 'investigation/add/%s' % id_invest
+        endpoint = 'investigation/add/%s' % invest['_id']
         from_obs = 'observable-%s' % obs_src['id']
         to_obs = 'observable-%s' % obs_dst['id']
         id_local = 'local-%s' % randint(0, 1000000)
