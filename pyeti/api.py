@@ -6,6 +6,7 @@
 import logging
 import os
 import time
+from random import randint
 
 import requests
 
@@ -391,6 +392,70 @@ class YetiApi(object):
             logging.error('Error to list investigation %s'
                           % self.yeti_url + endpoint)
             return []
+
+    def investigation_by_name(self, name):
+        endpoint = 'investigationsearch/'
+        r = self._make_post(endpoint)
+        if r:
+            res = list(filter(lambda x: x['name'] == name, r))
+            if res:
+                return res[0]
+        else:
+            logging.error('Error to list investigation %s'
+                          % self.yeti_url + endpoint)
+
+    def investigation_by_id(self, invest_id):
+        endpoint = 'investigation/%s' % invest_id
+        r = self._make_get(endpoint)
+        if r:
+            return r
+
+
+    def investigation_add_observable(self, id_invest,obs):
+        return self._investigation_add_node(id_invest, obs)
+
+    def investigation_add_entity(self, id_invest, obs):
+        return self._investigation_add_node(id_invest, obs, type_obj='entity')
+
+    def _investigation_add_node(self, id_invest, obs, type_obj='observable'):
+
+        endpoint = 'investigation/add/%s' % id_invest
+        data = {"links": [], "nodes": [{"$id": {"$oid": obs['id']},
+                                                "$ref":type_obj}]}
+        r = self._make_post(endpoint, json=data)
+
+        return r
+
+
+    def investigation_add_link(self, id_invest, obs_src, obs_dst, label):
+        data = {'links': [], 'nodes': []}
+        endpoint = 'investigation/add/%s' % id_invest
+        from_obs = 'observable-%s' % obs_src['id']
+        to_obs = 'observable-%s' % obs_dst['id']
+        id_local = 'local-%s' % randint(0, 1000000)
+        link = {
+            'from': from_obs,
+            'to': to_obs,
+            'id': id_local,
+            'arrows': 'to',
+            'color': 'red',
+            'Active': True
+        }
+        data['links'].append(link)
+        nodes = []
+        nodes.append(
+            {'$id': {'$oid': obs_src['id']}, '$ref' : 'observable'}
+        )
+        nodes.append(
+            {'$id': {'$oid': obs_dst['id']}, '$ref': 'observable'}
+
+        )
+
+        data['nodes'] = nodes
+
+        r = self._make_post(endpoint, json=data)
+
+        return r
 
     def _test_connection(self):
         if self._make_post("observablesearch/"):  # replace this with a more meaningful URL
