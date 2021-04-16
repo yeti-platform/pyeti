@@ -506,6 +506,28 @@ class YetiApi(object):
         r = self._make_post(endpoint, json=data)
         return r
 
+    def investigation_new(self, name):
+        data = {'name': name}
+        endpoint = 'investigation/'
+
+        r = self._make_post(endpoint, json=data)
+
+        return r
+
+    def investigation_delete(self, invest):
+        endpoint = 'investigation/%s' % invest['_id']
+
+        r = self._make_delete(endpoint)
+        return r
+
+    def investigation_rename(self, invest, new_name):
+        endpoint = 'investigation/rename/%s' % invest['_id']
+        data = {'name': new_name}
+
+        r = self._make_post(endpoint, json=data)
+
+        return r
+
     def _test_connection(self):
         if self._make_post("observablesearch/"):  # replace this with a more meaningful URL
             logging.debug("Connection to %s successful", self.yeti_url)
