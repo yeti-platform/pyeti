@@ -513,6 +513,39 @@ class YetiApi(object):
         r = self._make_post(endpoint, json=data)
         return r
 
+    def investigation_remove_link(self, invest, obs_src, obs_dst):
+        """Remove link between two observables
+        :param invest: Investigation
+        :type invest: dict
+        :param obs_src: observable with the link
+        :type obs_src: dict json of the observable
+        :param obs_dst: observable with the link
+        :type obs_dst: dict json of the observable
+        :return r: Investigation json updated
+        """
+        data = {'links': [], 'nodes': []}
+
+        endpoint = 'investigation/remove/%s' % invest['_id']
+        links = invest['links']
+
+        new_links = []
+
+        for link in links:
+            if link['fromnode'] == 'observable-%s' % obs_src['id'] and link['tonode'] == 'observable-%s' % obs_dst['id']:
+                link['from'] = link['fromnode']
+                link['to'] = link['tonode']
+                new_links.append(link)
+            if link['fromnode'] == 'observable-%s' % obs_dst['id'] and link['tonode'] =='observable-%s'% obs_src['id']:
+                link['from'] = link['fromnode']
+                link['to'] = link['tonode']
+                new_links.append(link)
+
+        data['links'] = new_links
+        print(data)
+        r = self._make_post(endpoint, json=data)
+
+        return r
+
     def investigation_new(self, name):
         """ Add a new Investigation
             :param name: name of the investigation
