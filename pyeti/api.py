@@ -485,6 +485,13 @@ class YetiApi(object):
         return r
 
     def investigation_remove_observable(self, invest, obs_to_delete):
+        """Remove an observable of an investigation
+            :param invest: Investigation dict json
+            :type invest: dict json of an Investigation
+            :param obs_to_delete: observable to delete
+            :return r: Investigation updated
+
+        """
         data = {'links': [], 'nodes': []}
         endpoint = 'investigation/remove/%s' % invest['_id']
 
@@ -507,6 +514,11 @@ class YetiApi(object):
         return r
 
     def investigation_new(self, name):
+        """ Add a new Investigation
+            :param name: name of the investigation
+            :type name: str
+            :return r: new investigation
+        """
         data = {'name': name}
         endpoint = 'investigation/'
 
@@ -515,12 +527,24 @@ class YetiApi(object):
         return r
 
     def investigation_delete(self, invest):
+        """ Delete a investigation
+        :param invest: investigation to deleted
+        :type invest: dict
+        :return r: dict json of the status
+        """
         endpoint = 'investigation/%s' % invest['_id']
 
         r = self._make_delete(endpoint)
         return r
 
     def investigation_rename(self, invest, new_name):
+        """Rename investigation
+        :param invest: investigation to rename
+        :type invest: dict
+        :param new_name: new name of the investigation
+        :type new_name: str
+        :return r: dict json of the renamed investigation
+        """
         endpoint = 'investigation/rename/%s' % invest['_id']
         data = {'name': new_name}
 
