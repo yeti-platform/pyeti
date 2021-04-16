@@ -484,6 +484,28 @@ class YetiApi(object):
 
         return r
 
+    def investigation_remove_observable(self, invest, obs_to_delete):
+        data = {'links': [], 'nodes': []}
+        endpoint = 'investigation/remove/%s' % invest['_id']
+
+        node_to_delete = [{'$id': {'$oid': obs_to_delete['id']},
+                           '$ref': 'observable'}]
+        links_to_filter = list(
+            filter(lambda x: x['fromnode'] == 'observable-%s' % obs_to_delete['id'] or x['tonode'] == 'observable-%s' %
+                             obs_to_delete['id'], invest['links']))
+        links_to_delete = []
+
+        for link in links_to_filter:
+            link['from'] = link['fromnode']
+            link['to'] = link['tonode']
+            links_to_delete.append(link)
+
+        data['links'] = links_to_delete
+        data['nodes'] = node_to_delete
+
+        r = self._make_post(endpoint, json=data)
+        return r
+
     def _test_connection(self):
         if self._make_post("observablesearch/"):  # replace this with a more meaningful URL
             logging.debug("Connection to %s successful", self.yeti_url)
