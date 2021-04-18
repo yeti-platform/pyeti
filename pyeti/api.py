@@ -457,8 +457,8 @@ class YetiApi(object):
         """
         data = {'links': [], 'nodes': []}
         endpoint = 'investigation/add/%s' % invest['_id']
-        from_obs = 'observable-%s' % obs_src['id']
-        to_obs = 'observable-%s' % obs_dst['id']
+        from_obs = 'observable-%s' % obs_src['_id']
+        to_obs = 'observable-%s' % obs_dst['_id']
         id_local = 'local-%s' % randint(0, 1000000)
         link = {
             'from': from_obs,
@@ -471,10 +471,10 @@ class YetiApi(object):
         data['links'].append(link)
         nodes = []
         nodes.append(
-            {'$id': {'$oid': obs_src['id']}, '$ref' : 'observable'}
+            {'$id': {'$oid': obs_src['_id']}, '$ref' : 'observable'}
         )
         nodes.append(
-            {'$id': {'$oid': obs_dst['id']}, '$ref': 'observable'}
+            {'$id': {'$oid': obs_dst['_id']}, '$ref': 'observable'}
 
         )
 
@@ -495,11 +495,11 @@ class YetiApi(object):
         data = {'links': [], 'nodes': []}
         endpoint = 'investigation/remove/%s' % invest['_id']
 
-        node_to_delete = [{'$id': {'$oid': obs_to_delete['id']},
+        node_to_delete = [{'$id': {'$oid': obs_to_delete['_id']},
                            '$ref': 'observable'}]
         links_to_filter = list(
-            filter(lambda x: x['fromnode'] == 'observable-%s' % obs_to_delete['id'] or x['tonode'] == 'observable-%s' %
-                             obs_to_delete['id'], invest['links']))
+            filter(lambda x: x['fromnode'] == 'observable-%s' % obs_to_delete['_id'] or x['tonode'] == 'observable-%s' %
+                             obs_to_delete['_id'], invest['links']))
         links_to_delete = []
 
         for link in links_to_filter:
@@ -531,17 +531,17 @@ class YetiApi(object):
         new_links = []
 
         for link in links:
-            if link['fromnode'] == 'observable-%s' % obs_src['id'] and link['tonode'] == 'observable-%s' % obs_dst['id']:
+            if link['fromnode'] == 'observable-%s' % obs_src['_id'] and link['tonode'] == 'observable-%s' % obs_dst['_id']:
                 link['from'] = link['fromnode']
                 link['to'] = link['tonode']
                 new_links.append(link)
-            if link['fromnode'] == 'observable-%s' % obs_dst['id'] and link['tonode'] =='observable-%s'% obs_src['id']:
+            if link['fromnode'] == 'observable-%s' % obs_dst['_id'] and link['tonode'] =='observable-%s'% obs_src['_id']:
                 link['from'] = link['fromnode']
                 link['to'] = link['tonode']
                 new_links.append(link)
 
         data['links'] = new_links
-        print(data)
+        #print(data)
         r = self._make_post(endpoint, json=data)
 
         return r
