@@ -586,6 +586,19 @@ class YetiApi(object):
 
         return r
 
+
+    def observable_remove_context(self, objectid, context):
+        """Remove Context to an observable.
+            objectid: The observable's ObjectID
+            context: Context to delete
+        Returns:
+            JSON representation of the updated observable
+        """
+        endpoint = 'observable/%s/context' % objectid
+        result = self._make_delete(endpoint, json=context)
+        return result
+
+
     def _test_connection(self):
         if self._make_post("observablesearch/"):  # replace this with a more meaningful URL
             logging.debug("Connection to %s successful", self.yeti_url)
@@ -600,6 +613,9 @@ class YetiApi(object):
 
     def _make_delete(self, url):
         return self._make_request(url, method="DELETE")
+
+    def _make_delete(self, url, **kwargs):
+        return self._make_request(url, method="DELETE_DATA", **kwargs)
 
     def _make_request(self, url, **kwargs):
         url = "{}{}".format(self.yeti_url, url)
@@ -618,6 +634,9 @@ class YetiApi(object):
         if method == "DELETE":
             resp = requests.delete(url, auth=self.auth, headers=headers,
             verify=self.verify_ssl)
+        if method == "DELETE_DATA":
+            resp = requests.delete(url, auth=self.auth, headers=headers,
+            verify=self.verify_ssl, **kwargs)
 
         if resp.status_code == 200:
             logging.debug("Success (%s)", resp.status_code)
