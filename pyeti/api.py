@@ -466,6 +466,7 @@ class YetiApi(object):
             'id': id_local,
             'arrows': 'to',
             'color': 'red',
+            'label': label,
             'Active': True
         }
         data['links'].append(link)
