@@ -542,7 +542,7 @@ class YetiApi(object):
                 new_links.append(link)
 
         data['links'] = new_links
-        print(data)
+        
         r = self._make_post(endpoint, json=data)
 
         return r
