@@ -6,6 +6,7 @@
 import logging
 import os
 import time
+from random import randint
 
 import requests
 
@@ -76,6 +77,34 @@ class YetiApi(object):
         """
         json = {"observables": observables}
         return self._make_post("analysis/match", json=json)
+
+    def link_add(self, link_src, link_dst, type_src="observable", type_dst="observable", description=None, source="API"):
+        """Add link between to entities to the dataset
+
+        Args:
+            link_src: The internal Yeti ID for the source entity to link
+            link_dst: The internal Yeti ID for the destination entity to link
+            type_src: Type of the entity (either "observable", "entity", or "indicator")
+            type_dst: Type of the entity (either "observable", "entity", or "indicator")
+            description: A string description of the link
+            source: A string representing the source of the data. Defaults to "API".
+
+        Returns:
+            JSON representation of the created link.
+        """
+
+        json = {
+            "link_src": link_src,
+            "link_dst": link_dst,
+            "type_src": type_src,
+            "type_dst": type_dst,
+            "source": source,
+        }
+
+        if description is not None:
+            json["description"] = description
+
+        return self._make_post('link/', json=json)
 
     def observable_search(self, count=50, offset=1, regex=False, **kwargs):
         """Search for observables.
@@ -183,7 +212,8 @@ class YetiApi(object):
         return self._make_post('neighbors/tuples/observable/%s/%s' %
                                (objectid, entity_name))
 
-    def observable_add(self, value, tags=None, context=None, source="API"):
+    def observable_add(self, value, tags=None, context=None, description=None,
+                       source="API"):
         """Add an observable to the dataset
             :param value: the Observable value
             :type value: str
@@ -191,6 +221,8 @@ class YetiApi(object):
             :type tags: list
             :param context: A dictionary object with context information
             :type context: dict
+            :param description: description of the observable
+            :type description: str
             :param source: A string representing the source of the data. Defaults to
                     "API".
             :type source: str
@@ -204,16 +236,18 @@ class YetiApi(object):
             "tags": tags,
             "value": value,
             "source": source,
-            "context": context
+            "context": context,
+            "description": description
         }
         return self._make_post('observable/', json=json)
 
-    def observable_change(self, objectid, tags=None, context=None):
+    def observable_change(self, objectid, tags=None, context=None, description=None):
         """Add tags to an observable.
 
             objectid: The observable's ObjectID
             tags: Tags to add
             context: Context to add
+            description: description of the observable
 
         Returns:
             JSON representation of the updated observable
@@ -222,7 +256,8 @@ class YetiApi(object):
             tags = []
         if context is None:
             context = {}
-        json = {"id": objectid, "tags": tags, "context": context}
+        json = {"id": objectid, "tags": tags, "context": context,
+                'description': description}
         result = self._make_post('observable/', json=json)
         return result
 
@@ -280,14 +315,25 @@ class YetiApi(object):
         else:
             raise ValueError("You need to pass an id or hash parameter.")
 
-    def observable_bulk_add(self, observables, tags=None):
-        """Add an observables in bulk mode to the dataset
-           :param observables: list observables to add in yeti
-            :return JSON representation of the created observable.
+
+    def observable_bulk_add(self, observables, tags=None, context=None, source="API"):
+        """Add an observable to the dataset
+
+        Args:
+            observables: list of Observable value
+            tags: An array of strings representing tags
+            context: A dictionary object with context information
+            source: A string representing the source of the data. Defaults to
+                    "API".
+
+        Returns:
+            JSON representation of the created observable.
         """
         if tags is None:
             tags = []
-        json = {"observables": [{"tags": tags, "value": o} for o in observables]}
+        if context is None:
+            context = {}
+        json = {"observables": [{"tags": tags, "value": o, "source": source, "context": context} for o in observables]}
         return self._make_post('observable/bulk', json=json)
 
     def get_analytic_oneshot(self, name_of_oneshot):
@@ -376,6 +422,220 @@ class YetiApi(object):
 
         return list_analytics
 
+    def investigation_list(self):
+        """List of investigations
+        :return: json with the investigation
+        """
+        endpoint = 'investigationsearch/'
+        r = self._make_post(endpoint)
+        if r:
+            return r
+        else:
+            logging.error('Error to list investigation %s'
+                          % self.yeti_url + endpoint)
+            return []
+
+    def investigation_by_name(self, name):
+        """Choose investigation by name
+
+        :param name: name of the investigation
+        :return: json of the investigation with nodes and links
+        """
+        endpoint = 'investigationsearch/'
+        r = self._make_post(endpoint)
+        if r:
+            res = list(filter(lambda x: x['name'] == name, r))
+            if res:
+                return res[0]
+        else:
+            logging.error('Error to list investigation %s'
+                          % self.yeti_url + endpoint)
+
+    def investigation_by_id(self, invest_id):
+        """
+        :param invest_id: id of the investigation selected
+        :return: json of the investigation with nodes and links
+        """
+        endpoint = 'investigation/%s' % invest_id
+        r = self._make_get(endpoint)
+        if r:
+            return r
+
+    def investigation_add_observable(self, invest, obs):
+        """ Adding an observable to a investigation
+        :param invest: Investigation object json
+        :param obs: Observable object json
+        :return: Investigation object json udpated
+        """
+        return self._investigation_add_node(invest, obs)
+
+    def investigation_add_entity(self, invest, entity):
+        """ Adding an entity to a investigation
+                :param invest: Investigation object json
+                :param entity: Entity object json
+                :return: Investigation object json udpated
+        """
+        return self._investigation_add_node(invest, entity, type_obj='entity')
+
+    def _investigation_add_node(self, invest, obs, type_obj='observable'):
+
+        endpoint = 'investigation/add/%s' % invest['_id']
+        data = {"links": [], "nodes": [{"$id": {"$oid": obs['id']},
+                                                "$ref":type_obj}]}
+        r = self._make_post(endpoint, json=data)
+
+        return r
+
+    def investigation_add_link(self, invest, obs_src, obs_dst, label):
+        """ Adding a link between two observable in a investigation
+                :param invest: Investigation object json
+                :param obs_src: Observable source
+                :param obs_dst: Observable destination
+                :param label: label on the link between two observables
+                :return: Investigation object json updated
+        """
+        data = {'links': [], 'nodes': []}
+        endpoint = 'investigation/add/%s' % invest['_id']
+        from_obs = 'observable-%s' % obs_src['id']
+        to_obs = 'observable-%s' % obs_dst['id']
+        id_local = 'local-%s' % randint(0, 1000000)
+        link = {
+            'from': from_obs,
+            'to': to_obs,
+            'id': id_local,
+            'label': label,
+            'arrows': 'to',
+            'color': 'red',
+            'Active': True
+        }
+        data['links'].append(link)
+        nodes = []
+        nodes.append(
+            {'$id': {'$oid': obs_src['id']}, '$ref' : 'observable'}
+        )
+        nodes.append(
+            {'$id': {'$oid': obs_dst['id']}, '$ref': 'observable'}
+
+        )
+
+        data['nodes'] = nodes
+
+        r = self._make_post(endpoint, json=data)
+
+        return r
+
+    def investigation_remove_observable(self, invest, obs_to_delete):
+        """Remove an observable of an investigation
+            :param invest: Investigation dict json
+            :type invest: dict json of an Investigation
+            :param obs_to_delete: observable to delete
+            :return r: Investigation updated
+
+        """
+        data = {'links': [], 'nodes': []}
+        endpoint = 'investigation/remove/%s' % invest['_id']
+
+        node_to_delete = [{'$id': {'$oid': obs_to_delete['id']},
+                           '$ref': 'observable'}]
+        links_to_filter = list(
+            filter(lambda x: x['fromnode'] == 'observable-%s' % obs_to_delete['id'] or x['tonode'] == 'observable-%s' %
+                             obs_to_delete['id'], invest['links']))
+        links_to_delete = []
+
+        for link in links_to_filter:
+            link['from'] = link['fromnode']
+            link['to'] = link['tonode']
+            links_to_delete.append(link)
+
+        data['links'] = links_to_delete
+        data['nodes'] = node_to_delete
+
+        r = self._make_post(endpoint, json=data)
+        return r
+
+    def investigation_remove_link(self, invest, obs_src, obs_dst):
+        """Remove link between two observables
+        :param invest: Investigation
+        :type invest: dict
+        :param obs_src: observable with the link
+        :type obs_src: dict json of the observable
+        :param obs_dst: observable with the link
+        :type obs_dst: dict json of the observable
+        :return r: Investigation json updated
+        """
+        data = {'links': [], 'nodes': []}
+
+        endpoint = 'investigation/remove/%s' % invest['_id']
+        links = invest['links']
+
+        new_links = []
+
+        for link in links:
+            if link['fromnode'] == 'observable-%s' % obs_src['id'] and link['tonode'] == 'observable-%s' % obs_dst['id']:
+                link['from'] = link['fromnode']
+                link['to'] = link['tonode']
+                new_links.append(link)
+            if link['fromnode'] == 'observable-%s' % obs_dst['id'] and link['tonode'] =='observable-%s'% obs_src['id']:
+                link['from'] = link['fromnode']
+                link['to'] = link['tonode']
+                new_links.append(link)
+
+        data['links'] = new_links
+        
+        r = self._make_post(endpoint, json=data)
+
+        return r
+
+    def investigation_new(self, name):
+        """ Add a new Investigation
+            :param name: name of the investigation
+            :type name: str
+            :return r: new investigation
+        """
+        data = {'name': name}
+        endpoint = 'investigation/'
+
+        r = self._make_post(endpoint, json=data)
+
+        return r
+
+    def investigation_delete(self, invest):
+        """ Delete a investigation
+        :param invest: investigation to deleted
+        :type invest: dict
+        :return r: dict json of the status
+        """
+        endpoint = 'investigation/%s' % invest['_id']
+
+        r = self._make_delete(endpoint)
+        return r
+
+    def investigation_rename(self, invest, new_name):
+        """Rename investigation
+        :param invest: investigation to rename
+        :type invest: dict
+        :param new_name: new name of the investigation
+        :type new_name: str
+        :return r: dict json of the renamed investigation
+        """
+        endpoint = 'investigation/rename/%s' % invest['_id']
+        data = {'name': new_name}
+
+        r = self._make_post(endpoint, json=data)
+
+        return r
+
+    def observable_remove_context(self, objectid, context):
+        """Remove Context to an observable.
+            objectid: The observable's ObjectID
+            context: Context to delete
+        Returns:
+            JSON representation of the updated observable
+        """
+        endpoint = 'observable/%s/context' % objectid
+        result = self._make_delete(endpoint, json=context)
+        return result
+
     def _test_connection(self):
         if self._make_post("observablesearch/"):  # replace this with a more meaningful URL
             logging.debug("Connection to %s successful", self.yeti_url)
@@ -390,6 +650,9 @@ class YetiApi(object):
 
     def _make_delete(self, url):
         return self._make_request(url, method="DELETE")
+
+    def _make_delete(self, url, **kwargs):
+        return self._make_request(url, method="DELETE_DATA", **kwargs)
 
     def _make_request(self, url, **kwargs):
         url = "{}{}".format(self.yeti_url, url)
@@ -408,6 +671,9 @@ class YetiApi(object):
         if method == "DELETE":
             resp = requests.delete(url, auth=self.auth, headers=headers,
             verify=self.verify_ssl)
+        if method == "DELETE_DATA":
+            resp = requests.delete(url, auth=self.auth, headers=headers,
+            verify=self.verify_ssl, **kwargs)
 
         if resp.status_code == 200:
             logging.debug("Success (%s)", resp.status_code)
