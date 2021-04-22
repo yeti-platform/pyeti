@@ -42,7 +42,7 @@ First thing is to import the library and instantiate a client.
 
 ```python
 import pyeti, json    # json is only used for pretty printing in the examples below 
-api = pyeti.YetiApi("http://localhost:5000/api/")
+api = pyetix.YetiApi("http://localhost:5000/api/")
 ```
 
 If you are using a self signed cert on your yeti instance you can set the `verify_ssl` parameter to `True` to ignore warnings.
