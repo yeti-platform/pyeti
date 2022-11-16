@@ -316,7 +316,7 @@ class YetiApi(object):
             raise ValueError("You need to pass an id or hash parameter.")
 
 
-    def observable_bulk_add(self, observables, tags=None, context=None, source="API"):
+    def observable_bulk_add(self, observables, tags=None, context=None, source="API", enforce_type=False, enforced_type="Text"):
         """Add an observable to the dataset
 
         Args:
@@ -325,6 +325,8 @@ class YetiApi(object):
             context: A dictionary object with context information
             source: A string representing the source of the data. Defaults to
                     "API".
+            enforce_type: Force the type of added data. 
+            enforced_type: A string representing the type of data to add.
 
         Returns:
             JSON representation of the created observable.
@@ -333,7 +335,10 @@ class YetiApi(object):
             tags = []
         if context is None:
             context = {}
-        json = {"observables": [{"tags": tags, "value": o, "source": source, "context": context} for o in observables]}
+        if enforce_type:
+            json = {"observables": [{"tags": tags, "value": o, "source": source, "context": context, "force_type":enforced_type} for o in observables]}
+        else:
+            json = {"observables": [{"tags": tags, "value": o, "source": source, "context": context} for o in observables]}
         return self._make_post('observable/bulk', json=json)
 
     def get_analytic_oneshot(self, name_of_oneshot):
