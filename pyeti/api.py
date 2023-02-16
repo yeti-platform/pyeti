@@ -241,7 +241,7 @@ class YetiApi(object):
         }
         if type_obs:
             json['force_type'] = type_obs
-        print(json)
+        
         return self._make_post('observable/', json=json)
 
     def observable_change(self, objectid, tags=None, context=None, description=None):
