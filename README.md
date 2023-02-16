@@ -1,23 +1,27 @@
 # pyeti-python3
+
 Pyeti-Python (pyeti) is the bundle uses to interface with the YETI API. This is the new package that can be installed directly with pip.
 Pyeti-python allows you to extract data from YETI such as specific observables (malware, IP, domains...). It can be used to plug in your own tool and enrich your Threat Intelligence feed with Yeti.
 
 ## Getting Started
+
 To install it you can clone the repo and run the following command:
 
-```
-$ python3 setup.py install
+```bash
+python3 setup.py install
 ```
 
 You can also install it with pip:
+
+```bash
+pip install yeti-python
 ```
-$ pip3 install pyeti-python3
-``` 
 
 Once installed the first thing to do is to get your API key from the Yeti interface.
 <img src="https://raw.githubusercontent.com/fr0gger/pyeti/master/yeti_api.png">
 
 Then you can configure your script with the following information to test the connection:
+
 ```python
 server="<IPofYETI>"
 key="<APIKEY>"
@@ -31,9 +35,11 @@ request = api.observable_search(tags=tag, count=50)
 
 You can run tests from the root directory by running:
 
-    $ pip3 install nose
-    $ python3 setup.py test
-    
+```
+    pip install nose
+    python setup.py test
+```
+
 **Note that most tests require a full running install of Yeti on localhost:5000**
 
 ## Use cases
@@ -53,13 +59,13 @@ import pyeti, json    # json is only used for pretty printing in the examples be
 api = pyeti.YetiApi("http://localhost:5000/api/", verify_ssl=False)
 ```
 
-
 ### Adding observables
 
 ```python
 results = api.observable_add("google.com", ['google'])
 print(json.dumps(results, indent=4, sort_keys=True))
 ```
+
 ### Bulk add
 
 ```python
@@ -87,6 +93,7 @@ print(json.dumps(result, indent=4, sort_keys=True))
 ```
 
 ### Add observables
+
 ```python
 result = api.observable_file_add("/tmp/hello.txt", tags=['benign'])
 print(json.dumps(result, indent=4, sort_keys=True))
@@ -96,5 +103,7 @@ api.observable_file_contents(objectid="594fff86bf365e6270f8914b")
 api.observable_file_contents(filehash="e134ced312b3511d88943d57ccd70c83") # you can also use any hash computed above
 'Hello!\n'
 ```
+
 # License
+
 This project is licensed under the Apache License - see the [LICENSE.md](https://github.com/fr0gger/pyeti/blob/master/LICENSE.md) file for details
