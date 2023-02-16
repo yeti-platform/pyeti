@@ -2,7 +2,8 @@ from unittest import TestCase
 import os
 import tempfile
 import random
-
+from configparser import ConfigParser
+import unittest
 import pyeti
 
 def _random_string():
@@ -13,11 +14,15 @@ def _random_domain(tld='com'):
 
 
 class TestAPI(TestCase):
-    url = 'http://localhost:5000/api'
-
+    """Tests for Yeti API."""
     def setUp(self):
-        self.api = pyeti.YetiApi(self.url)
+            config = ConfigParser()
+            config.read("pyeti.conf")
+            url = config.get('yeti', 'url')
+            api_key = config.get('yeti', 'api_key')
+            self.api = pyeti.YetiApi(url=url, api_key= api_key)
 
+     
     def test_observable_add(self):
         """Adds an observable with tags and tests for that value and tags match."""
         domain = _random_domain()
@@ -25,7 +30,6 @@ class TestAPI(TestCase):
         self.assertEqual(info['value'], domain)
         tags = [t['name'] for t in info['tags']]
         self.assertEqual(tags, ['asd'])
-
     def test_observable_delete(self):
         domain = _random_domain()
         info = self.api.observable_add(domain)
@@ -42,7 +46,6 @@ class TestAPI(TestCase):
         info = self.api.observable_add(domain)
         info = self.api.observable_details(info['id'])
         self.assertEqual(info['value'], domain)
-
     def test_observable_change(self):
         """Adds an observable and tries to add a tag."""
         domain = _random_domain()
@@ -50,7 +53,6 @@ class TestAPI(TestCase):
         info = self.api.observable_change(info['id'], tags=['dsa'])
         tags = [t['name'] for t in info['tags']]
         self.assertEqual(tags, ['asd', 'dsa'])
-
     def test_observable_by_tag(self):
         domain = _random_domain()
         tag = _random_string()
@@ -60,13 +62,11 @@ class TestAPI(TestCase):
         self.assertEqual(results[0]['value'], domain)
         tags = [t['name'] for t in results[0]['tags']]
         self.assertIn(tag, tags)
-
     def test_bulk_observable_add(self):
         """Adds an observables in bulk."""
         observables = ["{}{}.com".format(_random_domain(), i) for i in range(20)]
         info = self.api.observable_bulk_add(observables, ['bulk'])
         self.assertEqual(len(info), 20)
-
     def test_bulk_observable_refang_add(self):
         """Adds defanged observables in bulk."""
         observables = ["hxxp://{}{}.com".format(_random_domain(), i) for i in range(20)]
@@ -74,26 +74,20 @@ class TestAPI(TestCase):
         self.assertEqual(len(info), 20)
         for url in info:
             self.assertIn('http://', url['value'])
-
     def test_observable_refang(self):
         """Adds a defanged observable and tests that it is refanged."""
         result = self.api.observable_add('hxxp://test.com/')
         self.assertEqual(result['value'], 'http://test.com/')
-
         result = self.api.observable_add('hxxps://test[.]com/')
         self.assertEqual(result['value'], 'https://test.com/')
-
         result = self.api.observable_add('test[.]com')
         self.assertEqual(result['value'], 'test.com')
-
     def test_observable_url_normalize(self):
         """Adds a valid URL is normalized."""
         result = self.api.observable_add('http://test.com')
         self.assertEqual(result['value'], 'http://test.com/')
-
         result = self.api.observable_add('https://test.com/something/../asd')
         self.assertEqual(result['value'], 'https://test.com/asd')
-
     def test_observable_file_add(self):
         """Creates a temporary file and attempts to upload it to Yeti."""
         with tempfile.NamedTemporaryFile('wb', delete=False) as f:
@@ -106,7 +100,6 @@ class TestAPI(TestCase):
         self.assertEqual(fileinfo[0]['value'], expected_filename)
         tags = [t['name'] for t in fileinfo[0]['tags']]
         self.assertEqual(tags, ['file_tag'])
-
     def test_file_download_by_id(self):
         with tempfile.NamedTemporaryFile('wb', delete=False) as f:
             f.write(b"content")
@@ -115,7 +108,6 @@ class TestAPI(TestCase):
         os.remove(filename)
         content_by_id = self.api.observable_file_contents(objectid=fileinfo['id'])
         self.assertEqual(content_by_id, b"content")
-
     def test_file_download_by_hash(self):
         with tempfile.NamedTemporaryFile('wb', delete=False) as f:
             f.write(b"content")
@@ -126,7 +118,6 @@ class TestAPI(TestCase):
         filehash = "ed7002b439e9ac845f22357d822bac1444730fbdb6016d3ec9432297b9ec9f73"
         content_by_hash = self.api.observable_file_contents(filehash=filehash)
         self.assertEqual(content_by_hash, b"content")
-
     def test_analysis_match(self):
         """Calls the match endpoint with a known and an unknown domain."""
         self.api.observable_add('test.com')
@@ -134,7 +125,6 @@ class TestAPI(TestCase):
         known = [o['value'] for o in results['known']]
         self.assertIn('test.com', known)
         self.assertIn('unknown.com', results['unknown'])
-
     def test_observable_search(self):
         """Adds a semi-random domain name and tries searching for it."""
         domain = _random_domain()
@@ -144,5 +134,16 @@ class TestAPI(TestCase):
         self.assertEqual(result[0]['value'], "search-"+domain)
 
 
-if __name__ == '__main__':
-    TestCase.main()
+    def test_force_type(self):
+        asn = self.api.observable_add(value="1234",type_obs="AutonomousSystem")
+        if not asn:
+            self.assertIsNotNone(asn)
+        
+        asn_added = self.api.observable_search(value="1234")
+        if not asn_added:
+            self.assertIsNotNone(asn_added)
+
+        self.assertEqual(asn_added[0]["value"], "1234")
+
+if __name__ == "__main__":
+    unittest.main()
