@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "yeti-python"
+version = "1.0"
+description = "Client python for YETI Platform"
+authors = ["Sebdraven <sebdraven@protonmail.com>"]
+license = "Apache 2.0"
+readme = "README.md"
+packages = [{include = "pyeti"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+requests = "^2.28.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
