@@ -212,7 +212,7 @@ class YetiApi(object):
         return self._make_post('neighbors/tuples/observable/%s/%s' %
                                (objectid, entity_name))
 
-    def observable_add(self, value, tags=None, context=None, description=None,
+    def observable_add(self, value,type_obs=None ,tags=None, context=None, description=None,
                        source="API"):
         """Add an observable to the dataset
             :param value: the Observable value
@@ -239,6 +239,9 @@ class YetiApi(object):
             "context": context,
             "description": description
         }
+        if type_obs:
+            json['force_type'] = type_obs
+        print(json)
         return self._make_post('observable/', json=json)
 
     def observable_change(self, objectid, tags=None, context=None, description=None):
