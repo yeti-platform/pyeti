@@ -27,7 +27,7 @@ server="<IPofYETI>"
 key="<APIKEY>"
 tag="<NameoftheObservable>" # example: 'lokibot'
 
-api = pyeti.YetiApi("http://%s:5000/api/" % server, api_key=key)
+api = pyeti.YetiApi(url="http://%s:5000/api/" % server, api_key=key)
 request = api.observable_search(tags=tag, count=50)
 ```
 
@@ -35,9 +35,19 @@ request = api.observable_search(tags=tag, count=50)
 
 You can run tests from the root directory by running:
 
+To test client api python of yeti setup a pyeti.conf in folder tests.
+
+In pyeti.conf
+
+```yaml
+[yeti]
+url = http://127.0.0.1:5000/api
+api_key = your_api_key
 ```
-    pip install nose
-    python setup.py test
+
+```bash
+cd tests
+python test_observables.py
 ```
 
 **Note that most tests require a full running install of Yeti on localhost:5000**
@@ -48,7 +58,7 @@ First thing is to import the library and instantiate a client.
 
 ```python
 import pyeti, json    # json is only used for pretty printing in the examples below 
-api = pyetix.YetiApi("http://localhost:5000/api/")
+api = pyeti.YetiApi(url="http://localhost:5000/api/")
 ```
 
 If you are using a self signed cert on your yeti instance you can set the `verify_ssl` parameter to `True` to ignore warnings.
@@ -56,7 +66,7 @@ Otherwise all ssl connections are verified by default.
 
 ```python
 import pyeti, json    # json is only used for pretty printing in the examples below 
-api = pyeti.YetiApi("http://localhost:5000/api/", verify_ssl=False)
+api = pyeti.YetiApi(url="http://localhost:5000/api/", verify_ssl=False)
 ```
 
 ### Adding observables
