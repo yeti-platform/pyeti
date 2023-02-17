@@ -54,6 +54,32 @@ class YetiApi(object):
         Returns:
            JSON representation of the requested Entity."""
         return self._make_get("entity/{}".format(entity_id))
+    def entity_add(self, name="",entity_type="", tags=[], description="" , **kwargs):
+        """Add an entity to the dataset
+
+        Args:
+            entity_type: The type of entity to add
+            value: The value of the entity to add
+            tags: A list of tags to add to the entity
+            description: A description of the entity
+            source: The source of the entity
+
+        Returns:
+            JSON representation of the added Entity.
+        """
+        json = {}
+        for k,v in kwargs.items():
+            json[k] = v
+        if name:
+            json["name"] = name
+        if entity_type:
+            json["type"] = entity_type
+        if tags:
+            json["tags"] = tags
+        if description:
+            json["description"] = description
+
+        return self._make_post("entity/", json=json)
 
     def related_indicators(self, entity, **kwargs):
         """Fetches indicators linked to a given entity.
