@@ -54,7 +54,7 @@ class YetiApi(object):
         Returns:
            JSON representation of the requested Entity."""
         return self._make_get("entity/{}".format(entity_id))
-    def entity_add(self, name="",entity_type="", tags=[], description="" , **kwargs):
+    def __entity_add(self, name="",entity_type="", tags=[], description="" , **kwargs):
         """Add an entity to the dataset
 
         Args:
@@ -80,7 +80,90 @@ class YetiApi(object):
             json["description"] = description
 
         return self._make_post("entity/", json=json)
+    
+    def add_malware(self,name="", tags=[], description="" , **kwargs):
+        """Add a malware entity to the dataset
 
+        Args:
+            name: The name of the malware
+            tags: A list of tags to add to the entity
+            description: A description of the entity
+            source: The source of the entity
+
+        Returns:
+            JSON representation of the added Entity.
+        """
+        return self.__entity_add(name=name,entity_type="malware", tags=tags, description=description , **kwargs)
+    
+    def add_actor(self,name="", tags=[], description="" , **kwargs):
+        """Add an actor entity to the dataset
+
+        Args:
+            name: The name of the actor
+            tags: A list of tags to add to the entity
+            description: A description of the entity
+            source: The source of the entity
+
+        Returns:
+            JSON representation of the added Entity.
+        """
+        return self.__entity_add(name=name,entity_type="actor", tags=tags, description=description , **kwargs)
+    
+    def add_campaign(self,name="", tags=[], description="" , **kwargs):
+        """Add a campaign entity to the dataset
+
+        Args:
+            name: The name of the campaign
+            tags: A list of tags to add to the entity
+            description: A description of the entity
+            source: The source of the entity
+
+        Returns:
+            JSON representation of the added Entity.
+        """
+        return self.__entity_add(name=name,entity_type="campaign", tags=tags, description=description , **kwargs)
+    def add_ttp(self,name="", tags=[], description="",killchain=1 , **kwargs):
+        """Add a tool entity to the dataset
+
+        Args:
+            name: The name of the tool
+            tags: A list of tags to add to the entity
+            description: A description of the entity
+            source: The source of the entity
+
+        Returns:
+            JSON representation of the added Entity.
+        """
+        return self.__entity_add(name=name,entity_type="tool", tags=tags, description=description , **kwargs)
+    
+    def add_exploit(self,name="", tags=[], description="" , **kwargs):
+        """Add an exploit entity to the dataset
+
+        Args:
+            name: The name of the exploit
+            tags: A list of tags to add to the entity
+            description: A description of the entity
+            source: The source of the entity
+
+        Returns:
+            JSON representation of the added Entity.
+        """
+        return self.__entity_add(name=name,entity_type="exploit", tags=tags, description=description , **kwargs)
+
+    def add_company(self, name="", tags=[], description="" , **kwargs):
+        """Add a company entity to the dataset
+
+        Args:
+            name: The name of the company
+            tags: A list of tags to add to the entity
+            description: A description of the entity
+            source: The source of the entity
+
+        Returns:
+            JSON representation of the added Entity.
+        """
+        return self.__entity_add(name=name,entity_type="company", tags=tags, description=description , **kwargs)
+    
     def related_indicators(self, entity, **kwargs):
         """Fetches indicators linked to a given entity.
            :param entity: JSON dict representing the Entity to search indicators for.
