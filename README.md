@@ -8,7 +8,7 @@ Pyeti-python allows you to extract data from YETI such as specific observables (
 To install it you can clone the repo and run the following command:
 
 ```bash
-python3 setup.py install
+poetry install
 ```
 
 You can also install it with pip:
