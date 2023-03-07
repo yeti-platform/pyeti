@@ -11,10 +11,7 @@ from enum import Enum
 
 import requests
 
-
-class YetiApi(object):
-    """Python interface to the Yeti REST API."""
-    killchain_mapping= {
+KILLCHAIN_MAPPING= {
             "Reconnaissance": "1",
             "Weaponisation": "2",
             "Delivery": "3",
@@ -24,6 +21,9 @@ class YetiApi(object):
             "Objectives": "7",
         }
 
+class YetiApi(object):
+    """Python interface to the Yeti REST API."""
+   
     def __init__(self, url, auth=tuple(), api_key=None, verify_ssl=True):
         super(YetiApi, self).__init__()
         if not url.endswith("/"):
@@ -158,7 +158,7 @@ class YetiApi(object):
             JSON representation of the added Entity.
         """
 
-        if killchain not in YetiApi.killchain_mapping:
+        if killchain not in KILLCHAIN_MAPPING:
             raise ValueError("killchain must be one of the following: {}".format(YetiApi.killchain_mapping.keys()))
 
         return self.__entity_add(
