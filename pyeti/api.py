@@ -14,6 +14,15 @@ import requests
 
 class YetiApi(object):
     """Python interface to the Yeti REST API."""
+    killchain_mapping= {
+            "Reconnaissance": "1",
+            "Weaponisation": "2",
+            "Delivery": "3",
+            "Exploitation": "4",
+            "Installation": "5",
+            "C2": "6",
+            "Objectives": "7",
+        }
 
     def __init__(self, url, auth=tuple(), api_key=None, verify_ssl=True):
         super(YetiApi, self).__init__()
@@ -149,31 +158,15 @@ class YetiApi(object):
             JSON representation of the added Entity.
         """
 
-        assert killchain in [
-            "Reconnaissance",
-            "Weaponisation",
-            "Delivery",
-            "Exploitation",
-            "Installation",
-            "C2",
-            "Objectives",
-        ], "Killchain must be one of the following: Reconnaissance, Weaponisation, Delivery, Exploitation, Installation, C2, Objectives"
+        if killchain not in YetiApi.killchain_mapping:
+            raise ValueError("killchain must be one of the following: {}".format(YetiApi.killchain_mapping.keys()))
 
-        dict_killchain = {
-            "Reconnaissance": "1",
-            "Weaponisation": "2",
-            "Delivery": "3",
-            "Exploitation": "4",
-            "Installation": "5",
-            "C2": "6",
-            "Objectives": "7",
-        }
         return self.__entity_add(
             name=name,
             entity_type="ttp",
             tags=tags,
             description=description,
-            killchain=dict_killchain[killchain],
+            killchain=YetiApi.killchain_mapping[killchain],
             **kwargs
         )
 
