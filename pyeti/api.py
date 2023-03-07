@@ -11,19 +11,20 @@ from enum import Enum
 
 import requests
 
-KILLCHAIN_MAPPING= {
-            "Reconnaissance": "1",
-            "Weaponisation": "2",
-            "Delivery": "3",
-            "Exploitation": "4",
-            "Installation": "5",
-            "C2": "6",
-            "Objectives": "7",
-        }
+KILLCHAIN_MAPPING = {
+    "Reconnaissance": "1",
+    "Weaponisation": "2",
+    "Delivery": "3",
+    "Exploitation": "4",
+    "Installation": "5",
+    "C2": "6",
+    "Objectives": "7",
+}
+
 
 class YetiApi(object):
     """Python interface to the Yeti REST API."""
-   
+
     def __init__(self, url, auth=tuple(), api_key=None, verify_ssl=True):
         super(YetiApi, self).__init__()
         if not url.endswith("/"):
@@ -159,7 +160,11 @@ class YetiApi(object):
         """
 
         if killchain not in KILLCHAIN_MAPPING:
-            raise ValueError("killchain must be one of the following: {}".format(YetiApi.killchain_mapping.keys()))
+            raise ValueError(
+                "killchain must be one of the following: {}".format(
+                    YetiApi.killchain_mapping.keys()
+                )
+            )
 
         return self.__entity_add(
             name=name,
@@ -379,13 +384,13 @@ class YetiApi(object):
             "neighbors/tuples/observable/%s/%s" % (objectid, entity_name)
         )
 
-    def observable_add(
+    def __observable_add(
         self,
         value,
-        type_obs=None,
-        tags=None,
-        context=None,
-        description=None,
+        type_obs="",
+        tags=[],
+        context={},
+        description="",
         source="API",
     ):
         """Add an observable to the dataset
@@ -402,10 +407,7 @@ class YetiApi(object):
         :type source: str
         :return: dict JSON representation of the created observable.
         """
-        if tags is None:
-            tags = []
-        if context is None:
-            context = {}
+
         json = {
             "tags": tags,
             "value": value,
@@ -417,6 +419,303 @@ class YetiApi(object):
             json["force_type"] = type_obs
 
         return self._make_post("observable/", json=json)
+
+    def add_ipadress(
+        self, value, tags=[], context={}, description="", source="API", **kwargs
+    ):
+        """Add an IP address to the dataset
+        :param value: the IP address
+        :type value: str
+        :param tags: list of strings representing tags
+        :type tags: list
+        :param context: A dictionary object with context information
+        :type context: dict
+        :param description: description of the observable
+        :type description: str
+        :param source: A string representing the source of the data. Defaults to
+                "API".
+        :type source: str
+        :return: dict JSON representation of the created observable.
+        """
+        return self.__observable_add(
+            value,
+            type_obs="Ip",
+            tags=tags,
+            context=context,
+            description=description,
+            source=source,
+            **kwargs
+        )
+
+    def add_macaddress(
+        self, value, tags=[], context={}, description="", source="API", **kwargs
+    ):
+        """Add a MAC address to the dataset
+        :param value: the MAC address
+        :type value: str
+        :param tags: list of strings representing tags
+        :type tags: list
+        :param context: A dictionary object with context information
+        :type context: dict
+        :param description: description of the observable
+        :type description: str
+        :param source: A string representing the source of the data. Defaults to
+                "API".
+        :type source: str
+        :return: dict JSON representation of the created observable.
+        """
+        return self.__observable_add(
+            value,
+            type_obs="MacAddress",
+            tags=tags,
+            context=context,
+            description=description,
+            source=source,
+            **kwargs
+        )
+
+    def add_hostname(
+        self, value, tags=[], context={}, description="", source="API", **kwargs
+    ):
+        """Add a hostname to the dataset
+        :param value: the hostname
+        :type value: str
+        :param tags: list of strings representing tags
+        :type tags: list
+        :param context: A dictionary object with context information
+        :type context: dict
+        :param description: description of the observable
+        :type description: str
+        :param source: A string representing the source of the data. Defaults to
+
+        :type source: str
+        :return: dict JSON representation of the created observable.
+        """
+        return self.__observable_add(
+            value,
+            type_obs="Hostname",
+            tags=tags,
+            context=context,
+            description=description,
+            source=source,
+            **kwargs
+        )
+
+    def add_email(
+        self, value, tags=[], context={}, description="", source="API", **kwargs
+    ):
+        """Add an email address to the dataset
+        :param value: the email address
+        :type value: str
+        :param tags: list of strings representing tags
+        :type tags: list
+        :param context: A dictionary object with context information
+        :type context: dict
+        :param description: description of the observable
+        :type description: str
+        :param source: A string representing the source of the data. Defaults to
+                "API".
+        :type source: str
+        :return: dict JSON representation of the created observable.
+        """
+        return self.__observable_add(
+            value,
+            type_obs="Email",
+            tags=tags,
+            context=context,
+            description=description,
+            source=source,
+            **kwargs
+        )
+
+    def add_url(
+        self, value, tags=[], context={}, description="", source="API", **kwargs
+    ):
+        """Add an URL to the dataset
+        :param value: the URL
+        :type value: str
+        :param tags: list of strings representing tags
+        :type tags: list
+        :param context: A dictionary object with context information
+        :type context: dict
+        :param description: description of the observable
+        :type description: str
+        :param source: A string representing the source of the data. Defaults to "API".
+
+        :type source: str
+        :return: dict JSON representation of the created observable.
+        """
+        return self.__observable_add(
+            value,
+            type_obs="Url",
+            tags=tags,
+            context=context,
+            description=description,
+            source=source,
+            **kwargs
+        )
+
+    def add_text(
+        self, value, tags=[], context={}, description="", source="API", **kwargs
+    ):
+        """Add a text to the dataset
+        :param value: the text
+        :type value: str
+        :param tags: list of strings representing tags
+        :type tags: list
+        :param context: A dictionary object with context information
+        :type context: dict
+        :param description: description of the observable
+        :type description: str
+        :param source: A string representing the source of the data. Defaults to
+                "API".
+        :type source: str
+        :return: dict JSON representation of the created observable.
+        """
+        return self.__observable_add(
+            value,
+            type_obs="Text",
+            tags=tags,
+            context=context,
+            description=description,
+            source=source,
+            **kwargs
+        )
+
+    def add_path(
+        self, value, tags=[], context={}, description="", source="API", **kwargs
+    ):
+        """Add a path to the dataset
+        :param value: the path
+        :type value: str
+        :param tags: list of strings representing tags
+        :type tags: list
+        :param context: A dictionary object with context information
+        :type context: dict
+        :param description: description of the observable
+        :type description: str
+        :param source: A string representing the source of the data. Defaults to
+                "API".
+        :type source: str
+        :return: dict JSON representation of the created observable.
+        """
+        return self.__observable_add(
+            value,
+            type_obs="Path",
+            tags=tags,
+            context=context,
+            description=description,
+            source=source,
+            **kwargs
+        )
+
+    def add_asn(
+        self, value, tags=[], context={}, description="", source="API", **kwargs
+    ):  
+        """Add an ASN to the dataset
+        :param value: the ASN
+        :type value: str
+        :param tags: list of strings representing tags
+        :type tags: list
+        :param context: A dictionary object with context information
+        :type context: dict
+        :param description: description of the observable
+        :type description: str
+        :param source: A string representing the source of the data. Defaults to
+                "API".
+        :type source: str
+        :return: dict JSON representation of the created observable.
+        """
+        return self.__observable_add(
+            value,
+            type_obs="AutonomousSystem",
+            tags=tags,
+            context=context,
+            description=description,
+            source=source,
+            **kwargs
+        )
+
+    def add_hash(
+        self, value, tags=[], context={}, description="", source="API", **kwargs
+    ):
+        """Add a hash to the dataset
+        :param value: the hash
+        :type value: str
+        :param tags: list of strings representing tags
+        :type tags: list
+        :param context: A dictionary object with context information
+        :type context: dict
+        :param description: description of the observable
+        :type description: str
+        :param source: A string representing the source of the data. Defaults to
+                "API".
+        :type source: str
+        :return: dict JSON representation of the created observable.
+        """
+        return self.__observable_add(
+            value,
+            type_obs="Hash",
+            tags=tags,
+            context=context,
+            description=description,
+            source=source,
+            **kwargs
+        )
+
+    def add_bitcoin(
+        self, value, tags=[], context={}, description="", source="API", **kwargs
+    ):
+        """Add a bitcoin address to the dataset
+        :param value: the bitcoin address
+        :type value: str
+        :param tags: list of strings representing tags
+        :type tags: list
+        :param context: A dictionary object with context information
+        :type context: dict
+        :param description: description of the observable
+        :type description: str
+        :param source: A string representing the source of the data. Defaults to
+                "API".
+        :type source: str
+        :return: dict JSON representation of the created observable.
+        """
+        return self.__observable_add(
+            value,
+            type_obs="Bitcoin",
+            tags=tags,
+            context=context,
+            description=description,
+            source=source,
+            **kwargs
+        )
+
+    def add_text(
+        self, value, tags=[], context={}, description="", source="API", **kwargs
+    ):
+        """Add a text to the dataset
+        :param value: the text
+        :type value: str
+        :param tags: list of strings representing tags
+        :type tags: list
+        :param context: A dictionary object with context information
+        :type context: dict
+        :param description: description of the observable
+        :type description: str
+        :param source: A string representing the source of the data. Defaults to
+                "API".
+        :type source: str
+        :return: dict JSON representation of the created observable.
+        """
+        return self.__observable_add(
+            value,
+            type_obs="Text",
+            tags=tags,
+            context=context,
+            description=description,
+            source=source,
+            **kwargs
+        )
 
     def observable_change(self, objectid, tags=None, context=None, description=None):
         """Add tags to an observable.
