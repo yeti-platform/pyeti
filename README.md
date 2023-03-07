@@ -18,7 +18,7 @@ pip install yeti-python
 ```
 
 Once installed the first thing to do is to get your API key from the Yeti interface.
-<img src="https://raw.githubusercontent.com/fr0gger/pyeti/master/yeti_api.png">
+![image](./yeti_api.png)
 
 Then you can configure your script with the following information to test the connection:
 
@@ -50,7 +50,7 @@ cd tests
 python test_observables.py
 ```
 
-**Note that most tests require a full running install of Yeti on localhost:5000**
+__Note that most tests require a full running install of Yeti on localhost:5000.__
 
 ## Use cases
 
@@ -114,6 +114,6 @@ api.observable_file_contents(filehash="e134ced312b3511d88943d57ccd70c83") # you 
 'Hello!\n'
 ```
 
-# License
+## License
 
-This project is licensed under the Apache License - see the [LICENSE.md](https://github.com/fr0gger/pyeti/blob/master/LICENSE.md) file for details
+This project is licensed under the Apache License - see the [LICENSE.md](./LICENSE.md) file for details
