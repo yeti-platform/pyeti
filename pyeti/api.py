@@ -826,6 +826,13 @@ class YetiApi(object):
             ]
             if oneshot:
                 return oneshot[0]
+    
+    def add_analytics_settings(self, settings:dict) -> dict:
+            data = settings
+            if not isinstance(data, dict):
+                raise TypeError("settings must be a dict")
+            return self._make_post("users/settings", json=data)
+    
 
     def analytics_oneshot_run(self, oneshot, observable):
         """Launch an oneshot analytics on value of an Observable
