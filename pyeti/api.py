@@ -162,7 +162,7 @@ class YetiApi(object):
         if killchain not in KILLCHAIN_MAPPING:
             raise ValueError(
                 "killchain must be one of the following: {}".format(
-                    YetiApi.killchain_mapping.keys()
+                    KILLCHAIN_MAPPING.keys()
                 )
             )
 
@@ -171,7 +171,7 @@ class YetiApi(object):
             entity_type="ttp",
             tags=tags,
             description=description,
-            killchain=YetiApi.killchain_mapping[killchain],
+            killchain=KILLCHAIN_MAPPING[killchain],
             **kwargs
         )
 

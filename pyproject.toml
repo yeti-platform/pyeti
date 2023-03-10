@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "yeti-python"
-version = "1.3"
+version = "1.4"
 description = "Client python for YETI Platform"
 authors = ["Sebdraven <sebdraven@protonmail.com>"]
 license = "Apache 2.0"
