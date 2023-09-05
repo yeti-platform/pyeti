@@ -1,1 +1,1 @@
-from .api import YetiApi
+from .api import YetiClient
