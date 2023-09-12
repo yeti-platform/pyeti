@@ -7,6 +7,7 @@ class endpoints(tuple,Enum):
     observable_new = ('/api/v2/observables','POST')
     observable_search = ('/api/v2/observables/search','POST')
 
+
 class ObservableType(str, Enum):
     ip = 'ip'
     hostname = 'hostname'
@@ -24,6 +25,11 @@ class ObservableType(str, Enum):
     bitcoin_wallet = 'bitcoin_wallet'
     path = 'path'
     mac_address = 'mac_address'
+    command_line = 'command_line'
+    registry_key = 'registry_key'
+    imphash = 'imphash'
+    tlsh = 'tlsh'
+    ssdeep = 'ssdeep'
 
 class YetiClient:
     
@@ -78,6 +84,27 @@ class YetiClient:
     
     def add_bitcoin_wallet(self,value:str,tags:list=None):
         return self.__add_observable(value,ObservableType.bitcoin_wallet,tags)
+    
+    def add_path(self,value:str,tags:list=None):
+        return self.__add_observable(value,ObservableType.path,tags)
+    
+    def add_macaddress(self,value:str,tags:list=None):
+        return self.__add_observable(value,ObservableType.mac_address,tags)
+    
+    def add_command_line(self,value:str,tags:list=None):
+        return self.__add_observable(value,ObservableType.command_line,tags)
+    
+    def add_registry_key(self,value:str,tags:list=None):
+        return self.__add_observable(value,ObservableType.registry_key,tags)
+    
+    def add_imphash(self,value:str,tags:list=None):
+        return self.__add_observable(value,ObservableType.imphash,tags)
+    
+    def add_tlsh(self,value:str,tags:list=None):
+        return self.__add_observable(value,ObservableType.tlsh,tags)
+    
+    def add_ssdeep(self,value:str,tags:list=None):
+        return self.__add_observable(value,ObservableType.ssdeep,tags)
 
     def observable(self, observable_id:str):
         endpoint = endpoints.observable.value[0]
